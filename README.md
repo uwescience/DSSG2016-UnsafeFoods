@@ -8,3 +8,22 @@ project from the UW eScience Institute's
 ## Files
 
 * `data-preprocessing.py`: Functions for data processing
+
+## Repository Structure
+
+Raw data files should be placed in `data/raw/`. They won't be tracked by git
+because the `.gitignore` contains `data/*`.
+
+```
+DSSG2016-UnsafeFoods/
+├── .gitignore
+├── README.md
+├── code/
+│   └── data-preprocessing.py
+└── data/
+    ├── processed/
+    │   └── FDA_recalls.csv
+    └── raw/
+        ├── FDA_recalls.xml
+        └── reviews_Grocery_and_Gourmet_Food.json.gz
+```
