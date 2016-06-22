@@ -85,19 +85,18 @@ def checkDigit(s):
     else:
         return 10 - remainder
 
+def UPC10to12(s):
+    """
+     Returns list of possible 12-digit UPCs for a 10-digit UPC given each possible 'Number system digit'
+     (No more than one UPC in the list actually exists)
 
-    def UPC10to12(s):
-        """
-        Returns list of possible 12-digit UPCs for a 10-digit UPC given each possible 'Number system digit'
-        (No more than one UPC in the list actually exists)
+
+     SAMPLE USAGE
+     ------------
+     #first element of the returned list '030243507998' is the actual UPC
+     UPC10to12("3024350799")
         
-        
-         SAMPLE USAGE
-         ------------
-         #first element of the returned list '030243507998' is the actual UPC
-         UPC10to12("3024350799")
-        
-        """
+    """
     upc12_possible_list = []
     for num in [0,1,6,7,8]:
         upc_11 = str(num)+s
