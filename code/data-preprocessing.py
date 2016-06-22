@@ -101,5 +101,5 @@ def UPC10to12(s):
     for num in [0,1,6,7,8]:
         upc_11 = str(num)+s
         upc_12 = upc_11 + str(checkDigit(upc_11))
-        UPC12_possible_list.append(upc_12)
+        upc12_possible_list.append(upc_12)
     return upc12_possible_list;
