@@ -80,20 +80,21 @@ def getASIN(upc):
     """
     Query UPCtoASIN.com to determine ASIN from UPC.
 
-    Function must be passed a twelve-digit UPC; ten-digit UPCs will not work.
-    If the function receives a UPC that is not twelve digits, it will return a
-    string indicating the UPC's length.
+    First, any non-numeric characters are removed from the UPC (UPCs are often
+    provided with dashes between certain digits).
 
-    For twelve-digit UPCs, first remove any non-numeric characters from the UPC
-    (UPCs are often provided with dashes between certain digits). Query the
-    website and retrieve ASIN, then wait one second.
+    If the resulting UPC is not twelve digits, the function will throw a
+    ValueError.
+    
+    If the UPC is twelve digits, query the website and retrieve ASIN, then wait
+    one second (per API rate limit).
 
     SAMPLE USAGE
     ------------
 
     # Look up a single UPC
     getASIN("876063002233")
-    getASIN("8760630022")
+    getASIN("8760630022")       # Throws an error
 
     # Loop over multiple UPCs. One of the below returns UPCNOTFOUND, presumably
     # because this UPC does not have an ASIN because it's not sold by Amazon:
@@ -101,10 +102,10 @@ def getASIN(upc):
     for i in upc:
         print(getASIN(i))
     """
-    if len(upc) != 12:
-        return("UPClength-" + str(len(upc)))
+    upc_dig = re.sub("[^0-9]", "", upc)  # Remove non-numeric characters first
+    if len(upc_dig) != 12:
+        raise ValueError("UPC must be twelve digits long")
     else:
-        upc_dig = re.sub("[^0-9]", "", upc)
         url = "http://upctoasin.com/" + upc_dig
         response = requests.get(url)
         sleep(1)                # Sleep for one second
