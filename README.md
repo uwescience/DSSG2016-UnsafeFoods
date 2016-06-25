@@ -7,7 +7,9 @@ project from the UW eScience Institute's
 
 ## Files
 
-* `data-preprocessing.py`: Functions for data processing
+* `code/data-preprocessing.py`: Functions for data processing
+* `notebooks/NLTK Workbook.ipynb`: Notebook to create a corpus from the Amazon
+  review data
 
 ## Repository Structure
 
@@ -18,12 +20,14 @@ because the `.gitignore` contains `data/*`.
 DSSG2016-UnsafeFoods/
 ├── .gitignore
 ├── README.md
-├── code/
+├── code
 │   └── data-preprocessing.py
-└── data/
-    ├── processed/
-    │   └── FDA_recalls.csv
-    └── raw/
-        ├── FDA_recalls.xml
-        └── reviews_Grocery_and_Gourmet_Food.json.gz
+├── data
+│   ├── processed
+│   │   └── FDA_recalls.csv
+│   └── raw
+│       ├── FDA_recalls.xml
+│       └── reviews_Grocery_and_Gourmet_Food.json.gz
+└── notebooks
+    └── NLTK Workbook.ipynb
 ```
