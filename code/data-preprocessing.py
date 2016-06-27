@@ -74,7 +74,8 @@ def checkDigit(s):
 def UPC10to12(s):
     """
     Returns list of possible 12-digit UPCs for a 10-digit UPC given each
-    possible 'Number system digit' 
+    possible 'Number system digit' in order of likelyhood 
+    given overall frequency distribution of first digits 
 
     (No more than one UPC in the list actually exists)
 
@@ -93,7 +94,7 @@ def UPC10to12(s):
     UPC10to12("3024350799")
     """
     upc12_possible_list = []
-    for num in [0, 1, 6, 7, 8]:
+    for num in [0, 7, 8, 6, 3, 1, 9, 2, 4, 5]:
         upc_11 = str(num)+s
         upc_12 = upc_11 + str(checkDigit(upc_11))
         upc12_possible_list.append(upc_12)
@@ -183,10 +184,14 @@ def UPCtoASIN(upc):
     If UPC is ten digits, use Miki's UPC10to12 function to generate possible
     twelve-digit UPCs. Then, run those through searchPossUPCs to find an ASIN
     if one exists.
+    
+    If UPC is eleven digits, calculate last digit using checkDigit function and append it to string.
+    Then run this 12-digit string through getASIN. 
+    (Assumes that 11-digit strings are missing last digit, rather than first digit)
 
     If UPC is twelve digits, run through getASIN directly.
 
-    If UPC is neither ten nor twelve digits, return "UPClength-n" where n is
+    If UPC is neither ten, nor eleven, nor twelve digits, return "UPClength-n" where n is
     the number of digits.
 
     Parameters
@@ -205,7 +210,7 @@ def UPCtoASIN(upc):
     print(UPCtoASIN("5143549862"))         # UPCNOTFOUND
     print(UPCtoASIN("7606300223"))         # B001BCH7KM
     print(UPCtoASIN("76063-00223"))        # B001BCH7KM
-    print(UPCtoASIN("25846132581"))        # UPClength-11
+    print(UPCtoASIN("08606920030"))        # B004KT7UQY
     print(UPCtoASIN("125846523692"))       # UPCNOTFOUND
     print(UPCtoASIN("0-86069-20030-8"))    # B004KT7UQY
 
@@ -219,6 +224,9 @@ def UPCtoASIN(upc):
     if len(upc_dig) == 10:
         upc_12_list = UPC10to12(upc_dig)
         res = searchPossUPCs(upc_12_list)
+    elif len(upc_dig) == 11:
+        upc_12 = upc_dig + str(checkDigit(upc_dig))
+        res = getASIN(upc_12)
     elif len(upc_dig) == 12:
         res = getASIN(upc_dig)
     else:
