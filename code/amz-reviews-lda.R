@@ -4,6 +4,14 @@
 
 ## LDA code from: http://cpsievert.github.io/LDAvis/reviews/reviews.html
 
+## Install any necessary packages
+for (pkg in c("jsonlite", "lda", "tm", "LDAvis", "servr")) {
+  if(!pkg %in% installed.packages()) {
+    install.packages(pkg)
+  }
+}
+
+## Load packages
 library("jsonlite")
 library("lda")
 library("tm")
