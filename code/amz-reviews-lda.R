@@ -35,26 +35,29 @@ topic_model_vis <- function(data, obs_n = 1000, K = 10, seed = 30, dir) {
   ## Take a random sample of obs_n reviews
   set.seed(seed)
   reviews <- sample(data, size = obs_n)
-  
-  ## stopwords:
-  stop_words <- stopwords("SMART")
 
   ## pre-processing:
-  reviews <- gsub("'", "", reviews)             # remove apostrophes
-  reviews <- gsub("[[:punct:]]", " ", reviews)  # replace punctuation with space
-  reviews <- gsub("[[:digit:]]", "", reviews)   # remove digits
   reviews <- tolower(reviews)                   # force to lowercase
+  reviews <- gsub("'", "", reviews)             # remove apostrophes
+  reviews <- gsub("[^a-zA-Z\\s]", " ", reviews)  # remove non-letter characters
 
   ## tokenize on spaces (any number of spaces) and output as a list:
   doc.list <- strsplit(reviews, "\\s+")
+
+  ## stem words
+  doc.list <- lapply(doc.list, stemDocument)
 
   ## compute the table of terms:
   term.table <- table(unlist(doc.list))
   term.table <- sort(term.table, decreasing = TRUE)
 
-  ## remove terms that are stop words or occur fewer than 5 times:
+  ## stopwords:
+  stop_words <- stopwords("SMART")
+
+  ## remove terms that are stop words or occur fewer than 10 times or are empty
+  ## strings:
   del <- names(term.table) %in% stop_words |
-    term.table < 5 |
+    term.table < 10 |
     names(term.table) == ""
   term.table <- term.table[!del]
   vocab <- names(term.table)
