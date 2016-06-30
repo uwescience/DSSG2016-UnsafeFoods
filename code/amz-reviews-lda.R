@@ -22,10 +22,6 @@ library("servr")
 json_file <- "../data/processed/reviews_Grocery_and_Gourmet_Food_strict.json"
 amz <- fromJSON(sprintf("[%s]", paste(readLines(json_file), collapse=",")))
 
-## Take a random sample of 4000 reviews (so the code doesn't take forever)
-set.seed(20)
-reviews <- sample(amz$reviewText, 4000)
-
 ## Function to put documents into the format required by the lda package:
 get_terms <- function(x) {
   index <- match(x, vocab)
@@ -112,3 +108,12 @@ topic_model_vis <- function(data, obs_n = 1000, K = 10, seed = 30) {
   httd(dir = "../figs")
 }
 
+## Extract reviewText column
+reviews <- amz$reviewText
+
+## Random sample of 1000 reviews; 10 topics
+topic_model_vis(reviews, obs_n = 1000, K = 10)
+
+## View topics for one-star reviews
+onestar <- amz[amz$overall == 1, "reviewText"]
+topic_model_vis(onestar, obs_n = 2000, K = 7)
