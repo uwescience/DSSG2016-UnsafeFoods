@@ -7,13 +7,26 @@ project from the UW eScience Institute's
 
 ## Files
 
+* `asins/` folder contains ASINs (Amazon Standard ID Numbers) corresponding to
+  the UPCs in the `upcs/` folder
 * `code/data-preprocessing.py`: Functions for data processing
-* `notebooks/NLTK Workbook.ipynb`: Notebook to create a corpus from the Amazon
-  review data
+* `code/amz-reviews-to-strict-json.py`: Code to convert the raw Amazon review
+  file to strict JSON
+* `code/amz-reviews-lda.R`: Code to conduct LDA topic modeling and create
+  interactive visualizations in R
 * `notebooks/Fetching ASINs (FINALLY).ipynb`: Code to gather all ASINs for a
   file of UPCs
+* `notebooks/NLTK Workbook.ipynb`: Notebook to create a corpus from the Amazon
+  review data
+* `notebooks/NMF_exploration.ipynb`: iPython notebook that uses NMF to obtain
+  topic results for subset of Amazon Review Data
 * `upcs/` folder contains all of the UPCs from the FDA recalls, split into four
   files
+  
+### Data
+
+The contents of `data/` are ignored by git, but this is what it should contain:
+
 * `data/raw/reviews_Grocery_and_Gourmet_Food.json.gz` is from
   http://jmcauley.ucsd.edu/data/amazon/links.html -- scroll down to
   "Per-category files" and select the Grocery and Gourmet Food reviews file.
@@ -46,39 +59,6 @@ doc <- xmlTreeParse("FDA_recalls.xml", useInternalNodes = TRUE)
 dat <- xmlToDataFrame(doc)
 
 ## Write to CSV
-write.csv(dat, "FDA_recalls.csv", row.names = FALSE)
+write.csv(dat, "../processed/FDA_recalls.csv", row.names = FALSE)
 ```
 
-## Repository Structure
-
-Raw data files should be placed in `data/raw/`. They won't be tracked by git
-because the `.gitignore` contains `data/*`.
-
-```
-DSSG2016-UnsafeFoods/
-├── .gitignore
-├── README.md
-├── asins
-│   ├── asins-1.txt
-│   ├── asins-2.txt
-│   └── asins-3.txt
-├── code
-│   ├── amz-reviews-lda.R
-│   ├── amz-reviews-to-strict-json.py
-│   └── data-preprocessing.py
-├── data
-│   ├── processed
-│   │   ├── FDA_recalls.csv
-│   │   └── reviews_Grocery_and_Gourmet_Food_strict.json
-│   └── raw
-│       ├── FDA_recalls.xml
-│       └── reviews_Grocery_and_Gourmet_Food.json.gz
-├── notebooks
-│   ├── Fetching\ ASINs\ (FINALLY).ipynb
-│   └── NLTK\ Workbook.ipynb
-└── upcs
-    ├── upcs-1.txt
-    ├── upcs-2.txt
-    ├── upcs-3.txt
-    └── upcs-4.txt
-```
