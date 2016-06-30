@@ -23,7 +23,7 @@ json_file <- "../data/processed/reviews_Grocery_and_Gourmet_Food_strict.json"
 amz <- fromJSON(sprintf("[%s]", paste(readLines(json_file), collapse=",")))
 
 ## Function to put documents into the format required by the lda package:
-get_terms <- function(x) {
+get_terms <- function(x, vocab) {
   index <- match(x, vocab)
   index <- index[!is.na(index)]
   rbind(as.integer(index - 1), as.integer(rep(1, length(index))))
@@ -60,8 +60,8 @@ topic_model_vis <- function(data, obs_n = 1000, K = 10, seed = 30) {
   vocab <- names(term.table)
 
   ## Put documents into format required by LDA
-  documents <- lapply(doc.list, get_terms)
-  
+  documents <- lapply(doc.list, get_terms, vocab = vocab)
+
   ## Compute some statistics related to the data set:
   D <- length(documents)                # number of documents
   W <- length(vocab)                    # number of terms in the vocab
