@@ -8,8 +8,8 @@ project from the UW eScience Institute's
 ## Files
 
 * `asins/` folder contains ASINs (Amazon Standard ID Numbers) corresponding to
-  the UPCs in the `upcs/` folder and 'asin_intersection.txt'
-* 'asins/asin-intersection.txt': List of ASINs that appear in both FDA recall
+  the UPCs in the `upcs/` folder and `asin_intersection.txt`
+* `asins/asin-intersection.txt`: List of ASINs that appear in both FDA recall
    and amazon review datasets
 * `code/data-preprocessing.py`: Functions for data processing
 * `code/amz-reviews-to-strict-json.py`: Code to convert the raw Amazon review
@@ -22,9 +22,9 @@ project from the UW eScience Institute's
   review data
 * `notebooks/NMF_exploration.ipynb`: iPython notebook that uses NMF to obtain
   topic results for subset of Amazon Review Data
-* 'notebooks/join_review-recall notebook.ipynb': iPython notebook that constructs
+* `notebooks/join_review-recall notebook.ipynb`: iPython notebook that constructs
   dataframe of amazon reviews and recall status from 
-  'reviews_Grocery_and_Gourmet_Food.json.jz' and 'asin_intersection.txt'
+  `reviews_Grocery_and_Gourmet_Food.json.jz` and `asin_intersection.txt`
 * `upcs/` folder contains all of the UPCs from the FDA recalls, split into four
   files
   
