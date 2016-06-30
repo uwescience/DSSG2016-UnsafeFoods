@@ -30,8 +30,8 @@ get_terms <- function(x, vocab) {
 }
 
 ## Function to generate topic model and visualization
-topic_model_vis <- function(data, obs_n = 1000, K = 10, seed = 30) {
-  
+topic_model_vis <- function(data, obs_n = 1000, K = 10, seed = 30, dir) {
+
   ## Take a random sample of obs_n reviews
   set.seed(seed)
   reviews <- sample(data, size = obs_n)
@@ -101,19 +101,19 @@ topic_model_vis <- function(data, obs_n = 1000, K = 10, seed = 30) {
                      vocab = amz_reviews$vocab, 
                      term.frequency = amz_reviews$term.frequency)
 
-  serVis(json, out.dir = "../figs", open.browser = FALSE)
+  serVis(json, out.dir = dir, open.browser = FALSE)
 
   ## Serve the resulting file -- this should open a browser with an interactive
   ## visualization of the topics and frequent terms for each topic
-  httd(dir = "../figs")
+  httd(dir = dir)
 }
 
 ## Extract reviewText column
 reviews <- amz$reviewText
 
 ## Random sample of 1000 reviews; 10 topics
-topic_model_vis(reviews, obs_n = 1000, K = 10)
+topic_model_vis(reviews, obs_n = 1000, K = 10, dir = "../figs/n1000")
 
 ## View topics for one-star reviews
 onestar <- amz[amz$overall == 1, "reviewText"]
-topic_model_vis(onestar, obs_n = 2000, K = 7)
+topic_model_vis(onestar, obs_n = 2000, K = 7, dir = "../figs/n2000onestar")
