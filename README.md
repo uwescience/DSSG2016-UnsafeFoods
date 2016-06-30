@@ -14,12 +14,15 @@ project from the UW eScience Institute's
   file of UPCs
 * `upcs/` folder contains all of the UPCs from the FDA recalls, split into four
   files
-* `data/reviews_Grocery_and_Gourmet_Food.json.gz` is from
+* `data/raw/reviews_Grocery_and_Gourmet_Food.json.gz` is from
   http://jmcauley.ucsd.edu/data/amazon/links.html -- scroll down to
   "Per-category files" and select the Grocery and Gourmet Food reviews file.
   Note this is NOT the 5-core reviews file that appears under the "Files" header
-  on the web page. This data file should have 1,297,156 reviews.
-* `data/FDA_recalls.xml` -- this is the FDA recall data in XML form. In theory,
+  on the web page. This data file should have 1,297,156 reviews. This file is
+  not strict JSON, but can be converted to strict JSON with
+  `amz-reviews-to-strict-json.py`, which will output a file to the
+  `data/processed/` folder.
+* `data/raw/FDA_recalls.xml` -- this is the FDA recall data in XML form. In theory,
   this data should be available from data.gov at
   https://catalog.data.gov/dataset/all-fda-recalls-1ae7b, however the link on
   that page is broken. We used the Wayback machine to access a previous version
@@ -56,15 +59,20 @@ DSSG2016-UnsafeFoods/
 ├── .gitignore
 ├── README.md
 ├── asins
-│   └── asins-1.txt
+│   ├── asins-1.txt
+│   ├── asins-2.txt
+│   └── asins-3.txt
 ├── code
-│   ├── data-preprocessing.py
+│   ├── amz-reviews-lda.R
+│   ├── amz-reviews-to-strict-json.py
+│   └── data-preprocessing.py
 ├── data
 │   ├── processed
-│   │   └── FDA_recalls.csv
+│   │   ├── FDA_recalls.csv
+│   │   └── reviews_Grocery_and_Gourmet_Food_strict.json
 │   └── raw
 │       ├── FDA_recalls.xml
-│       ├── reviews_Grocery_and_Gourmet_Food.json.gz
+│       └── reviews_Grocery_and_Gourmet_Food.json.gz
 ├── notebooks
 │   ├── Fetching\ ASINs\ (FINALLY).ipynb
 │   └── NLTK\ Workbook.ipynb
