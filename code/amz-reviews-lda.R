@@ -105,10 +105,7 @@ topic_model_vis <- function(data, obs_n = 1000, K = 10, seed = 30, dir) {
                      term.frequency = amz_reviews$term.frequency)
 
   serVis(json, out.dir = dir, open.browser = FALSE)
-
-  ## Serve the resulting file -- this should open a browser with an interactive
-  ## visualization of the topics and frequent terms for each topic
-  httd(dir = dir)
+  
 }
 
 ## Extract reviewText column
