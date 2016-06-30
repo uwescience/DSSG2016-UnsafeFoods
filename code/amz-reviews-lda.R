@@ -22,6 +22,10 @@ library("servr")
 json_file <- "../data/processed/reviews_Grocery_and_Gourmet_Food_strict.json"
 amz <- fromJSON(sprintf("[%s]", paste(readLines(json_file), collapse=",")))
 
+## Load 5-core Amazon review data
+json_5 <- "../data/raw/reviews_Grocery_and_Gourmet_Food_5.json"
+amz5 <- fromJSON(sprintf("[%s]", paste(readLines(json_5), collapse=",")))
+
 ## Function to put documents into the format required by the lda package:
 get_terms <- function(x, vocab) {
   index <- match(x, vocab)
@@ -117,3 +121,12 @@ topic_model_vis(reviews, obs_n = 1000, K = 10, dir = "../figs/n1000")
 ## View topics for one-star reviews
 onestar <- amz[amz$overall == 1, "reviewText"]
 topic_model_vis(onestar, obs_n = 2000, K = 7, dir = "../figs/n2000onestar")
+
+## Replicate Mike's NMF approach using 5-core data with reviews of <5 stars
+reviews5 <- amz5[amz5$overall < 5, "reviewText"]
+topic_model_vis(reviews5, obs_n = length(reviews5), K = 15,
+                dir = "../figs/5coreno5star")
+
+## Serve the resulting file -- this should open a browser with an interactive
+## visualization of the topics and frequent terms for each topic
+httd(dir = "../figs/5coreno5star/")
