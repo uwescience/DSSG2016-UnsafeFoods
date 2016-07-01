@@ -23,8 +23,9 @@ project from the UW eScience Institute's
 * `notebooks/NMF_exploration.ipynb`: iPython notebook that uses NMF to obtain
   topic results for subset of Amazon Review Data
 * `notebooks/join_review-recall notebook.ipynb`: iPython notebook that constructs
-  dataframe of amazon reviews and recall status from 
-  `reviews_Grocery_and_Gourmet_Food.json.jz` and `asin_intersection.txt`
+  dataframe of amazon reviews, product metadata and recall status from 
+  `reviews_Grocery_and_Gourmet_Food.json.jz`,`meta_Grocery_and_Gourmet_Food.json.gz'
+   and `asin_intersection.txt`
 * `upcs/` folder contains all of the UPCs from the FDA recalls, split into four
   files
   
@@ -40,6 +41,10 @@ The contents of `data/` are ignored by git, but this is what it should contain:
   not strict JSON, but can be converted to strict JSON with
   `amz-reviews-to-strict-json.py`, which will output a file to the
   `data/processed/` folder.
+* `data/raw/meta_Grocery_and_Gourmet_Food.json.gz' is is from
+  http://jmcauley.ucsd.edu/data/amazon/links.html -- scroll down to
+  "Per-category files" and select the Grocery and Gourmet Food metadata file.
+  This data file should have 171,760 products.
 * `data/raw/FDA_recalls.xml` -- this is the FDA recall data in XML form. In theory,
   this data should be available from data.gov at
   https://catalog.data.gov/dataset/all-fda-recalls-1ae7b, however the link on
