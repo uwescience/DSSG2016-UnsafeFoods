@@ -37,8 +37,8 @@ get_terms <- function(x, vocab) {
 }
 
 ## Function to generate topic model and visualization
-topic_model_vis <- function(data, obs_n = 1000, K = 15, G = 1000, seed = 30,
-                            dir) {
+topic_model_vis <- function(data, obs_n = 1000, K = 15, G = 1000, min_freq = 10,
+                            seed = 30, dir) {
 
   ## Function paramters:
 
@@ -54,6 +54,9 @@ topic_model_vis <- function(data, obs_n = 1000, K = 15, G = 1000, seed = 30,
   ## G: corresponds to the num.iterations argument to
   ## lda.collapsed.gibbs.sampler: "The number of sweeps of Gibbs sampling over
   ## the entire corpus to make".
+
+  ## min_freq: the analysis will remove words that appear fewer than or equal to
+  ## min_freq times
 
   ## seed: a seed used for reproducibility of random sampling. Defaults to 30.
 
@@ -84,7 +87,7 @@ topic_model_vis <- function(data, obs_n = 1000, K = 15, G = 1000, seed = 30,
   ## remove terms that are stop words or occur fewer than 10 times or are empty
   ## strings:
   del <- names(term.table) %in% stop_words |
-    term.table < 10 |
+    term.table <= min_freq |
     names(term.table) == ""
   term.table <- term.table[!del]
   vocab <- names(term.table)
