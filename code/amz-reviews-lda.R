@@ -17,6 +17,9 @@ library("lda")
 library("tm")
 library("LDAvis")
 library("servr")
+library("dplyr")
+library("tidyr")
+library("ggplot2")
 
 ## Load Amazon review data
 json_file <- "../data/processed/reviews_Grocery_and_Gourmet_Food_strict.json"
@@ -99,7 +102,26 @@ topic_model_vis <- function(data, obs_n = 1000, K = 10, seed = 30, dir) {
                       vocab = vocab,
                       term.frequency = term.frequency)
 
-
+  ## Visualize log likelihood convergence - first create data frame of log
+  ## likelihoods. According to the lda.collapsed.gibbs.sampler documentation,
+  ## "The first row contains the full log likelihood (including the prior),
+  ## whereas the second row contains the log likelihood of the observations
+  ## conditioned on the assignments".
+  dat <- as.data.frame(fit$log.likelihood) %>%
+    mutate(opt = c("full", "conditioned")) %>%
+    gather(iteration, likelihood, -opt) %>%
+    mutate(iteration = as.numeric(gsub("(V)([[:digit:]])", "\\2", iteration)))
+  
+  ggplot(dat, aes(x = iteration, y = likelihood, color = opt)) +
+    geom_point() +
+    labs(x = "Iteration",
+         y = "Log likelihood",
+         color = "") +
+    scale_color_manual(values = c("#fc8d62", "#8da0cb"),
+                       labels = c("Full log likelihood including prior",
+                                  "Log likelihood conditioned on assignments")) +
+    theme(legend.position = "bottom") +
+    ggsave(paste0(dir, "/convergence.png"), width = 6, height = 6)
 
   ## Create the JSON object to feed the visualization:
   json <- createJSON(phi = amz_reviews$phi, 
