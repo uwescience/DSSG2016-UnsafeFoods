@@ -165,7 +165,7 @@ topic_model_vis(onestar, obs_n = 2000, K = 7, dir = "../figs/n2000onestar")
 
 ## Replicate Mike's NMF approach using 5-core data with reviews of <5 stars
 reviews5 <- amz5[amz5$overall < 5, "reviewText"]
-topic_model_vis(reviews5, obs_n = length(reviews5), K = 15,
+topic_model_vis(reviews5, obs_n = length(reviews5), K = 15, G = 1000,
                 dir = "../figs/5coreno5star")
 
 ## Serve the resulting file -- this should open a browser with an interactive
