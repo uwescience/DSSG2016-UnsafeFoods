@@ -37,8 +37,28 @@ get_terms <- function(x, vocab) {
 }
 
 ## Function to generate topic model and visualization
-topic_model_vis <- function(data, obs_n = 1000, K = 10, seed = 30, dir) {
+topic_model_vis <- function(data, obs_n = 1000, K = 15, G = 1000, seed = 30,
+                            dir) {
 
+  ## Function paramters:
+
+  ## data: vector whose elements are documents (i.e. each element is an Amazon
+  ## review)
+
+  ## obs_n: number of documents to sample. Defaults to 1000. To use all
+  ## documents, use length(data), replacing "data" with the name of the vector
+  ## of documents
+
+  ## K: number of topics to generate. Defaults to 15.
+
+  ## G: corresponds to the num.iterations argument to
+  ## lda.collapsed.gibbs.sampler: "The number of sweeps of Gibbs sampling over
+  ## the entire corpus to make".
+
+  ## seed: a seed used for reproducibility of random sampling. Defaults to 30.
+
+  ## dir: output directory for visualizations
+  
   ## Take a random sample of obs_n reviews
   set.seed(seed)
   reviews <- sample(data, size = obs_n)
@@ -81,7 +101,6 @@ topic_model_vis <- function(data, obs_n = 1000, K = 10, seed = 30, dir) {
   term.frequency <- as.integer(term.table) # frequencies of terms in the corpus
 
   ## MCMC and model tuning parameters:
-  G <- 5000
   alpha <- 0.02
   eta <- 0.02
 
