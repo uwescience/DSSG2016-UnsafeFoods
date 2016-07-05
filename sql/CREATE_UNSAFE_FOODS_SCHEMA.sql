@@ -47,3 +47,13 @@ CREATE TABLE Review(
 	review_time TIME
 );
 
+#Create indeces for the primary keys
+CREATE SEQUENCE recall_serial START 10001;
+CREATE SEQUENCE company_serial START 10001;
+CREATE SEQUENCE brand_serial START 10001;
+CREATE SEQUENCE product_serial START 1000001;
+CREATE SEQUENCE recall_hist_serial START 1000001;
+CREATE SEQUENCE reviewer_serial START 10000001;
+CREATE SEQUENCE review_serial START 1000000001;
+
+
