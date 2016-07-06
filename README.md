@@ -28,6 +28,11 @@ project from the UW eScience Institute's
    and `asin_intersection.txt`
 * `upcs/` folder contains all of the UPCs from the FDA recalls, split into four
   files
+* `github_data/` folder contains small data files to be stored on github 
+  (rather than being in the ignored data folder)
+* `github_data/amazon_product_categories.csv`: CSV file storing the amazon product
+   category hierarchy. The first column contains each category name, and the second
+   column contains the "parent" category". 
   
 ### Data
 
