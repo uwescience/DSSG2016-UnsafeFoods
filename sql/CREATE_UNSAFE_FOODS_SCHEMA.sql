@@ -1,7 +1,7 @@
-﻿CREATE TABLE Recall(
-	recall_id INT PRIMARY KEY,
-	recall_date DATE NOT NULL,
-	reason VARCHAR(100) NOT NULL,
+﻿CREATE TABLE Event(
+	event_id INT PRIMARY KEY,
+	event_date DATE NOT NULL,
+	reason VARCHAR(250) NOT NULL,
 	company_release_link TEXT NOT NULL,
 	photos_link TEXT NOT NULL
 );
@@ -10,6 +10,9 @@ CREATE TABLE Company(
 	company_id BIGINT PRIMARY KEY,
 	company_name VARCHAR(100) NOT NULL	
 );
+
+ALTER TABLE Event
+ADD COLUMN company_id BIGINT REFERENCES Company(company_id)
 
 CREATE TABLE Brand(
 	brand_id BIGINT PRIMARY KEY,
@@ -25,9 +28,9 @@ CREATE TABLE Product(
 	product_description TEXT
 );
 
-CREATE TABLE RecallHistory(
-	recall_history_id BIGINT PRIMARY KEY,
-	recall_id INT REFERENCES Recall(recall_id),
+CREATE TABLE Recall(
+	recall_id BIGINT PRIMARY KEY,
+	event_id INT REFERENCES Event(event_id),
 	product_id BIGINT REFERENCES Product(product_id)
 );
 
