@@ -57,6 +57,9 @@ topic_model_vis <- function(data, obs_n = 1000, K = 15, G = 1000, min_freq = 10,
   ## seed: a seed used for reproducibility of random sampling. Defaults to 30.
 
   ## dir: output directory for visualizations
+
+  ## Create output directory
+  dir.create(dir)
   
   ## Take a random sample of obs_n reviews
   set.seed(seed)
