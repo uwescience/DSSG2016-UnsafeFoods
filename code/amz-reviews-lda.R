@@ -4,22 +4,18 @@
 
 ## LDA code based on: http://cpsievert.github.io/LDAvis/reviews/reviews.html
 
+packages <- c("jsonlite", "lda", "tm", "LDAvis", "servr", "dplyr", "tidyr",
+              "ggplot2")
+
 ## Install any necessary packages
-for (pkg in c("jsonlite", "lda", "tm", "LDAvis", "servr")) {
+for (pkg in packages) {
   if(!pkg %in% installed.packages()) {
     install.packages(pkg)
   }
 }
 
 ## Load packages
-library("jsonlite")
-library("lda")
-library("tm")
-library("LDAvis")
-library("servr")
-library("dplyr")
-library("tidyr")
-library("ggplot2")
+sapply(packages, library, character.only = TRUE)
 
 ## Load Amazon review data
 json_file <- "../data/processed/reviews_Grocery_and_Gourmet_Food_strict.json"
