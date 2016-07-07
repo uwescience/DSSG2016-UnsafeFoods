@@ -10,7 +10,9 @@ project from the UW eScience Institute's
 * `asins/` folder contains ASINs (Amazon Standard ID Numbers) corresponding to
   the UPCs in the `upcs/` folder and `asin_intersection.txt`
 * `asins/asin-intersection.txt`: List of ASINs that appear in both FDA recall
-   and amazon review datasets
+   and amazon grocery and gourmet food review  datasets
+* `asins/asin-intersection_health.txt`: List of ASINs that appear in both FDA recall
+   and amazon health care review datasets
 * `code/data-preprocessing.py`: Functions for data processing
 * `code/amz-reviews-to-strict-json.py`: Code to convert the raw Amazon review
   file to strict JSON
@@ -28,6 +30,11 @@ project from the UW eScience Institute's
    and `asin_intersection.txt`
 * `upcs/` folder contains all of the UPCs from the FDA recalls, split into four
   files
+* `github_data/` folder contains small data files to be stored on github 
+  (rather than being in the ignored data folder)
+* `github_data/amazon_product_categories.csv`: CSV file storing the amazon product
+   category hierarchy. The first column contains each category name, and the second
+   column contains the "parent" category". 
   
 ### Data
 
