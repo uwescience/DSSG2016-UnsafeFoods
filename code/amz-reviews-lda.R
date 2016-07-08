@@ -173,3 +173,40 @@ topic_model_vis(reviews5, obs_n = length(reviews5), K = 15, G = 1000,
 ## Serve the resulting file -- this should open a browser with an interactive
 ## visualization of the topics and frequent terms for each topic
 httd(dir = "../figs/5coreno5star/")
+
+###########################################################################
+####  Compare reviews for recalled products and non-recalled products  ####
+###########################################################################
+
+## List of recalled products
+recalled <- read.csv("../data/processed/recalls_upcs_asins_joined.csv",
+                     stringsAsFactors = FALSE)
+
+## Vector of ASINs from recalled products
+recalled_asins <- unique(recalled$asins) %>%
+  sapply(strsplit, ";") %>%
+  unname() %>%
+  unlist()
+
+## Extract reviews matching these ASINs
+amz_recalled <- amz %>%
+  filter(asin %in% recalled_asins)
+
+## Number of reviews of recalled products
+n <- nrow(amz_recalled)
+
+## Visualize topics for recalled products
+topic_model_vis(amz_recalled$reviewText, obs_n = n, K = 20, G = 1000,
+                dir = "../figs/recalled_products")
+
+httd(dir = "../figs/recalled_products/")
+
+## Create a visualization for non-recalled products with same parameters (number
+## of reviews, number of clusters, sampling iterations, etc.)
+nonrecalled <- filter(amz, !asin %in% recalled_asins)
+
+topic_model_vis(nonrecalled$reviewText, obs_n = n, K = 20, G = 1000,
+                dir = "../figs/non_recalled_products")
+
+httd(dir = "../figs/non_recalled_products/")
+
