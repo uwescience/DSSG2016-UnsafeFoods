@@ -72,8 +72,7 @@ ggplot(amz_clean, aes(x = recall, fill = recall)) +
 
 ![](../figs/total-review-n-1.png)
 
-Reviews per year of recalled vs. non-recalled products
-------------------------------------------------------
+### Reviews per year of recalled vs. non-recalled products
 
 ``` r
 yearly_tally <- amz_clean %>%
@@ -112,6 +111,46 @@ fullplot + annotation_custom(grob = g, xmin = 1999, xmax = 2009, ymin = 260000,
 ```
 
 ![](../figs/yearly-counts-1.png)
+
+### Reviews per month of recalled vs. non-recalled products
+
+``` r
+monthly_tally <- amz_clean %>%
+  mutate(month = month(date),
+         newdate = as.Date(paste(year, month, "01", sep = "-"), "%Y-%m-%d")) %>%
+  group_by(newdate, recall) %>%
+  tally()
+
+fullplot_mo <- ggplot(monthly_tally, aes(x = newdate, y = n, color = recall)) +
+  geom_line() +
+  geom_point() +
+  scale_color_viridis(discrete = TRUE, end = 0.7) +
+  scale_y_continuous(labels = comma) +
+  labs(x = "Year",
+       y = "",
+       color = "")
+
+## Recalled only
+recallplot_mo <- ggplot(monthly_tally[monthly_tally$recall == "Recalled", ],
+                        aes(x = newdate, y = n)) +
+  geom_line(color = "#49be74") +
+  geom_point(color = "#49be74") +
+  labs(x = "Year",
+       y = "") +
+  theme(axis.title.x = element_blank(),
+        axis.text.x = element_text(size = 7, margin = margin(0, -10, 0, 0, "pt")),
+        axis.text.y = element_text(size = 7, margin = margin(0, -10, 0, 0, "pt")),
+        panel.grid = element_blank(),
+        panel.border = element_rect(color = "black", fill = NA))
+
+g_mo = ggplotGrob(recallplot_mo)
+fullplot_mo + annotation_custom(grob = g_mo,
+                                xmin = as.numeric(as.Date("1999-06-01")),
+                                xmax = as.numeric(as.Date("2010-01-01")),
+                                ymin = 25000, ymax = 60000)
+```
+
+![](../figs/monthly-counts-1.png)
 
 Rating distribution for recalled and non-recalled products
 ----------------------------------------------------------
