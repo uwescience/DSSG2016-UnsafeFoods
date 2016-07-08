@@ -57,7 +57,7 @@ mytheme <- theme_update(
 Review counts of recalled vs. non-recalled products
 ---------------------------------------------------
 
-There are a total of 1638 reviews for recalled food products and 0 reviews for non-recalled food products.
+There are a total of 1638 reviews for recalled food products and 1295518 reviews for non-recalled food products.
 
 ``` r
 ggplot(amz_clean, aes(x = recall, fill = recall)) +
