@@ -25,7 +25,7 @@ library("viridis")
 
 Then, load the Amazon review data and list of recalled UPCs/ASINs.
 
-```{r data}
+```{r data, cache=TRUE}
 ## Load Amazon review data
 json_file <- "../data/processed/reviews_Grocery_and_Gourmet_Food_strict.json"
 amz <- fromJSON(sprintf("[%s]", paste(readLines(json_file), collapse=",")))
