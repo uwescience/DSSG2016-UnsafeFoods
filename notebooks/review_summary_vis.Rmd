@@ -64,7 +64,7 @@ mytheme <- theme_update(
 
 ```{r review-counts, echo = FALSE}
 recalled_count <- nrow(amz_clean[amz_clean$recall == "Recalled", ])
-nonrecalled_count <- nrow(amz_clean[amz_clean$recall == "Not Recalled", ])
+nonrecalled_count <- nrow(amz_clean[amz_clean$recall == "Not recalled", ])
 ```
 
 There are a total of `r recalled_count` reviews for recalled food products and
