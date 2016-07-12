@@ -54,7 +54,15 @@ data_food <- lapply(datalist, function(x) filter(x, Product.Type == "Food"))
 ## Combine into one data frame
 data_df <- bind_rows(data_food)
 
-## Export to CSV
-write.csv(data_df,
+## Some (all?) of the More.Code.Info columns are empty. Look for the columns
+## that only contain NAs or empty strings:
+cols <- lapply(data_df, function(x) all(is.na(x) | x == ""))
+keep <- names(cols[cols == FALSE]) # Non-empty columns
+
+## Keep only the non-empty columns
+data_df_keep <- data_df[keep]
+
+## Export keeper columns to CSV
+write.csv(data_df_keep,
           "../data/processed/FDA_food_enforcements_2012-06_to_2016-07.csv",
           row.names = FALSE)
