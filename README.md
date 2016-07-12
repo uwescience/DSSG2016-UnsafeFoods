@@ -18,6 +18,9 @@ project from the UW eScience Institute's
   file to strict JSON
 * `code/amz-reviews-lda.R`: Code to conduct LDA topic modeling and create
   interactive visualizations in R
+* `code/enforcement-data-merge.R`: Code to extract data on food products from
+  the weekly FDA enforcement reports and generate one large CSV from the 200+
+  weekly CSVs.
 * `notebooks/Fetching ASINs (FINALLY).ipynb`: Code to gather all ASINs for a
   file of UPCs
 * `notebooks/NLTK Workbook.ipynb`: Notebook to create a corpus from the Amazon
@@ -79,3 +82,9 @@ dat <- xmlToDataFrame(doc)
 write.csv(dat, "../processed/FDA_recalls.csv", row.names = FALSE)
 ```
 
+* `data/raw/FDA-enforcement/` is a folder that contains weekly FDA enforcement
+  reports downloaded manually from
+  http://www.accessdata.fda.gov/scripts/ires/index.cfm. This data goes back to
+  mid 2012.
+* `data/processed/FDA_food_enforcements_2012-06_to_2016-07.csv` has data from
+  the weekly enforcement reports for food products as one large file.
