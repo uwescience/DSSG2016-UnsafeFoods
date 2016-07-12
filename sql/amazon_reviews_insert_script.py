@@ -42,5 +42,5 @@ for row in range(review_data.shape[0]):
 
 #commit and close
 conn.commit()
-print("Records created successfully");
+print("Records created successfully")
 conn.close()

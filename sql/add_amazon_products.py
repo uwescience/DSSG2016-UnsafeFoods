@@ -23,7 +23,7 @@ review_data = pandas.read_csv("C://Users/cvint/Desktop/DSSG Unsafe Foods/github-
 cur = conn.cursor()
 
 #This was used during the debugging and initial writing of the script.
-cur.execute("DELETE FROM Product;")
+#cur.execute("DELETE FROM Product;")
 
 #track asins already added
 already_added = []
