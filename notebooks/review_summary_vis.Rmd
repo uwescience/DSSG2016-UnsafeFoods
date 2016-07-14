@@ -171,3 +171,48 @@ ggplot(amz_clean, aes(x = overall, fill = recall)) +
        x = "Rating") +
   theme(legend.position = "none")
 ```
+
+## Ratings over time for recalled products
+
+View the rating distribution over time for the 9 recalled products that have the
+most reviews.
+
+First find the recalled products with the most reviews
+
+```{r most-reviewed-recalled-products}
+asins_ordered <- amz_clean %>%
+  filter(recall == "Recalled") %>%
+  group_by(asin) %>%
+  tally() %>%
+  arrange(desc(n))
+
+top_asins <- asins_ordered[1:9, ]$asin  # Choose top 9
+```
+
+Subset review data to only include these product. Then find the quarterly count
+of each star rating (1-5) for each product.
+
+```{r quarterly-rating-tallies}
+top_asins_ratings  <- amz_clean %>%
+  filter(asin %in% top_asins) %>%
+  mutate(quarter = quarter(date),
+         overall = as.character(overall)) %>%
+  group_by(year, quarter, asin, overall) %>%
+  tally() %>%
+  mutate(newdate = paste(year, quarter, sep = "-"))
+```
+
+Visualize quarterly rating distribution for the 9 most reviewed recalled products.
+
+```{r quarterly-rating-dist-recalled}
+ggplot(top_asins_ratings, aes(x = newdate, y = n, fill = overall)) +
+  geom_bar(position = "fill", stat = "identity") + 
+  facet_wrap(~ asin, scales = "free_y") +
+  scale_fill_viridis(discrete = TRUE) +
+  theme(axis.text.x = element_text(size = 6, angle = 90, margin = margin(t = -12)),
+        axis.text.y = element_text(size = 7, margin = margin(r = -12)),
+        legend.position = "bottom") +
+  labs(x = "Quarter",
+       y = "",
+       fill = "Rating")
+```
