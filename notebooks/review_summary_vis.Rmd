@@ -207,7 +207,7 @@ Visualize quarterly rating distribution for the 9 most reviewed recalled product
 ```{r quarterly-rating-dist-recalled}
 ggplot(top_asins_ratings, aes(x = newdate, y = n, fill = overall)) +
   geom_bar(position = "fill", stat = "identity") + 
-  facet_wrap(~ asin, scales = "free_y") +
+  facet_wrap(~ asin) +
   scale_fill_viridis(discrete = TRUE) +
   theme(axis.text.x = element_text(size = 6, angle = 90, margin = margin(t = -12)),
         axis.text.y = element_text(size = 7, margin = margin(r = -12)),
