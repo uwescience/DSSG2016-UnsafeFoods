@@ -50,7 +50,7 @@ cur = conn.cursor()
 #This was used during the debugging and initial writing of the script.
 #cur.execute("DELETE FROM CategoryAssignment;")
 
-for row in range(100000,150000):
+for row in range(df.shape[row]):
     asin = df.asin[row]
     for cat_list_ind in range(len(df.categories[row])):
         for index in range(len(df.categories[row][cat_list_ind])):
