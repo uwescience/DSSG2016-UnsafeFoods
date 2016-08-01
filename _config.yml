@@ -7,8 +7,8 @@ permalink:           pretty
 title:               Mining Online Data for Early Identification of Unsafe Food Products
 tagline:             ""
 description:         "A Data Science for Social Good 2016 fellowship project."
-url:                 https://uwescience.github.io/DSSG2016-UnsafeFoods
-baseurl:             https://uwescience.github.io/DSSG2016-UnsafeFoods
+url:                 https://uwescience.github.io/DSSG2016-UnsafeFoods/
+baseurl:             DSSG2016-UnsafeFoods
 
 # Custom vars
 version:             0.0.1
