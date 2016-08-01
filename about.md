@@ -3,11 +3,12 @@ layout: page
 title: About
 ---
 
-Some text in markdown...
+**Project Lead:**
+[Elaine Nsoesie](http://globalhealth.washington.edu/faculty/elaine-nsoesie),
+Institute for Health Metrics and Evaluation, Department of Global Health, UW
 
-* Bulleted list
-* Another item
+**Data Scientists:** Valentina Staneva, Joe Hellerstein, Jes Ford
 
-[Link to a site](http://escience.washington.edu/dssg/project-summaries-2016/).
+**DSSG Fellows:** Michael Munsell, Miki Verma, Cynthia Vint, Kara Woo
 
-Add more here later...
+More info to come...
