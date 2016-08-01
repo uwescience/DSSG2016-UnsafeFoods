@@ -2,6 +2,10 @@
 layout: default
 ---
 
+This project is part of the UW eScience Institute's
+[Data Science for Social Good](http://escience.washington.edu/dssg/project-summaries-2016/)
+summer fellowship.
+
 In this study, we aim to investigate whether text mining of food product reviews
 can aid in the identification and ranking of food safety issues. Specifically,
 we focus on assessing whether text mining of the millions of consumer reviews
