@@ -1,22 +1,20 @@
 # Permalinks
-#
 # Use of `relative_permalinks` ensures post links from the index work properly.
-permalink:           pretty
-relative_permalinks: true
+# permalink:           pretty
+# relative_permalinks: true
 
 # Setup
-title:               Lanyon
-tagline:             'A Jekyll theme'
-description:         'A reserved <a href="http://jekyllrb.com" target="_blank">Jekyll</a> theme that places the utmost gravity on content with a hidden drawer. Made by <a href="https://twitter.com/mdo" target="_blank">@mdo</a>.'
-url:                 http://lanyon.getpoole.com
+title:               Mining Online Data for Early Identification of Unsafe Food Products
+tagline:             ''
+description:         'A Data Science for Social Good 2016 fellowship project.'
+url:                 https://uwescience.github.io/DSSG2016-UnsafeFoods/
 baseurl:             ''
-paginate:            5
 
 # About/contact
-author:
-  name:              Mark Otto
-  url:               https://twitter.com/mdo
-  email:             markdotto@gmail.com
+# author:
+#   name:
+#   url:
+#   email:
 
 # Custom vars
-version:             1.0.0
+version:             0.0.1
