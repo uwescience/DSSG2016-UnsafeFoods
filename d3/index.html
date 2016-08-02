@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html lang="en">
+  
+  <head>
+    <title>Amazon Reviews and Ratings</title>
+    <!-- Get Lato font -->
+    <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://d3js.org/d3-time.v1.min.js"></script>
+    <script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+  </head>
+
+  <style>
+
+    body {
+    font: 14px sans-serif;
+    }
+
+    .axis line,
+    .axis text {
+    font-size: 14px;
+    }
+
+    .axis path,
+    .axis line {
+    fill: none;
+    stroke: #E6E7E8;
+    shape-rendering: crispEdges;
+    }
+
+    circle {
+    fill-opacity: 0.3;
+    stroke-width: 1px;
+    stroke-opacity: 0.5;
+    }
+
+    .tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: #ffffff;
+    }
+
+  </style>
+  
+  <body>
+
+    <div id="scatter"></div>
+    <script type="text/javascript" src="ratings.js"></script>
+    
+  </body>
+</html>
