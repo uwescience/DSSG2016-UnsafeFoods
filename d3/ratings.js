@@ -3,6 +3,8 @@
 var margin = {top: 20, right: 190, bottom: 30, left: 50};
 var w = 1000 - margin.left - margin.right;
 var h = 480 - margin.top - margin.bottom;
+var radius = 6;
+var padding = 1;
 
 // x and y scales 
 var x = d3.time.scale()
@@ -23,6 +25,14 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
         d.rating = +d.overall;
     });
 
+    // Force directed layout
+    var force = d3.layout.force()
+            .nodes(data)
+            .size([w, h])
+            .on("tick", tick)
+            .charge(-1)
+            .gravity(0)
+            .chargeDistance(20);
     
     // Calculate maxima and minima and use these to set x/y domain
     var xMax = d3.max(data, function(d) { return d[xVar]; }),
@@ -88,36 +98,82 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
     var out_dur = 500;          // Duration for removing tooltips
     
     // Plot points
-    svg.selectAll(".dot")
-        .data(data)
-        .enter().append("circle")
-        .attr("class", "dot")
-        .attr("r", 6)
-        .style("fill", pointcolor)
-        .attr("cx", function(d) { return x(d.date); })
-        .attr("cy", function(d) { return y(d.rating); })
-        .on("mouseover", function(d) { tooltip.transition()
-                                       .duration(in_dur)
-                                       .style("opacity", .9);
-                                       tooltip.html(d.reviewText)
-                                       .style("left", (d3.event.pageX + 14)
-                                              + "px")
-                                       .style("top", (d3.event.pageY - 28)
-                                              + "px");
-                                       
-                                       d3.select(this)
-                                       .style("fill", "red");
-                                     })
-        .on("mouseout", function(d) { tooltip.transition()
-                                      .duration(out_dur)
-                                      .style("opacity", 0);
-                                      
-                                      d3.select(this)
-                                      .transition()
-                                      .duration(out_dur)
-                                      .style("fill", pointcolor);
+    var node = svg.selectAll(".dot")
+            .data(data)
+            .enter().append("circle")
+            .attr("class", "dot")
+            .attr("r", radius)
+            .style("fill", pointcolor)
+            .attr("cx", function(d) { return x(d.date); })
+            .attr("cy", function(d) { return y(d.rating); })
+            .on("mouseover", function(d) { tooltip.transition()
+                                           .duration(in_dur)
+                                           .style("opacity", .9);
+                                           tooltip.html("<b>" + d.date + "</b><br>"
+                                                        + d.reviewText)
+                                           .style("left", (d3.event.pageX + 14)
+                                                  + "px")
+                                           .style("top", (d3.event.pageY - 28)
+                                                  + "px");
+                                           
+                                           d3.select(this)
+                                           .style("fill", "red");
+                                         })
+            .on("mouseout", function(d) { tooltip.transition()
+                                          .duration(out_dur)
+                                          .style("opacity", 0);
+                                          
+                                          d3.select(this)
+                                          .transition()
+                                          .duration(out_dur)
+                                          .style("fill", pointcolor);
 
-                                    });
+                                        });
+
+    // Jittering
+    // http://bl.ocks.org/rpgove/10603627
+    force.start();
+
+    function tick(e) {
+        node.each(moveTowardDataPosition(e.alpha));
+        node.attr("cx", function(d) { return d.x; })
+            .attr("cy", function(d) { return d.y; });
+    }
     
+    function moveTowardDataPosition(alpha) {
+        return function(d) {
+            d.x += (x(d[xVar]) - d.x) * 0.1 * alpha;
+            d.y += (y(d[yVar]) - d.y) * 0.1 * alpha;
+        };
+    }
+
+    // Resolve collisions between nodes.
+    function collide(alpha) {
+        var quadtree = d3.geom.quadtree(data);
+        return function(d) {
+            var r = d.radius + radius + padding,
+                nx1 = d.x - r,
+                nx2 = d.x + r,
+                ny1 = d.y - r,
+                ny2 = d.y + r;
+            quadtree.visit(function(quad, x1, y1, x2, y2) {
+                if (quad.point && (quad.point !== d)) {
+                    var x = d.x - quad.point.x,
+                        y = d.y - quad.point.y,
+                        l = Math.sqrt(x * x + y * y),
+                        r = d.radius + quad.point.radius +
+                            (d.color !== quad.point.color) * padding;
+                    if (l < r) {
+                        l = (l - r) / l * alpha;
+                        d.x -= x *= l;
+                        d.y -= y *= l;
+                        quad.point.x += x;
+                        quad.point.y += y;
+                    }
+                }
+                return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+            });
+        };
+    }
     
 });
