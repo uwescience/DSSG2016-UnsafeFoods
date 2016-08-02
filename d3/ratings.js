@@ -23,7 +23,6 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
         d.rating = +d.overall;
     });
 
-    console.log(data);
     
     // Calculate maxima and minima and use these to set x/y domain
     var xMax = d3.max(data, function(d) { return d[xVar]; }),
@@ -45,7 +44,7 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
             .ticks(5)
             .scale(y)
             .orient("left");
-        
+    
     // Create SVG
     var svg = d3.select("#scatter")
             .append("svg")
@@ -78,14 +77,47 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
         .style("text-anchor", "end")
         .text("Rating");
 
+
+    // Tooltips for points
+    var tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+    var pointcolor = "black";
+    var in_dur = 50;            // Transition duration for bringing in tooltips
+    var out_dur = 500;          // Duration for removing tooltips
+    
     // Plot points
     svg.selectAll(".dot")
         .data(data)
         .enter().append("circle")
         .attr("class", "dot")
         .attr("r", 6)
+        .style("fill", pointcolor)
         .attr("cx", function(d) { return x(d.date); })
-        .attr("cy", function(d) { return y(d.rating); });
+        .attr("cy", function(d) { return y(d.rating); })
+        .on("mouseover", function(d) { tooltip.transition()
+                                       .duration(in_dur)
+                                       .style("opacity", .9);
+                                       tooltip.html(d.reviewText)
+                                       .style("left", (d3.event.pageX + 14)
+                                              + "px")
+                                       .style("top", (d3.event.pageY - 28)
+                                              + "px");
+                                       
+                                       d3.select(this)
+                                       .style("fill", "red");
+                                     })
+        .on("mouseout", function(d) { tooltip.transition()
+                                      .duration(out_dur)
+                                      .style("opacity", 0);
+                                      
+                                      d3.select(this)
+                                      .transition()
+                                      .duration(out_dur)
+                                      .style("fill", pointcolor);
 
+                                    });
+    
     
 });
