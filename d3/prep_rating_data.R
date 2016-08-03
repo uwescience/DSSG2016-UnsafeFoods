@@ -11,14 +11,8 @@ amz <- stream_in(file(json_file))
 recalled <- read.csv("../github_data/asin_intersection_full.csv",
                      stringsAsFactors = FALSE)
 
-## Extract vector of ASINs of recalled products
-recalled_asins <- unique(recalled$asin) %>%
-  sapply(strsplit, ";") %>%
-  unname() %>%
-  unlist()
-
 ## Keep only recalled products
-amz_recall <- filter(amz, asin %in% recalled_asins) %>%
+amz_recall <- filter(amz, asin %in% recalled$asin) %>%
   select(-reviewerID, -reviewerName, -helpful)
 
 ## TODO: merge with metadata to get product name
