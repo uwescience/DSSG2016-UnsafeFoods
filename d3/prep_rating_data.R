@@ -1,4 +1,3 @@
-
 ## Load required packages
 library("jsonlite")
 library("dplyr")
@@ -15,8 +14,6 @@ recalled <- read.csv("../github_data/asin_intersection_full.csv",
 amz_recall <- filter(amz, asin %in% recalled$asin) %>%
   select(-reviewerID, -reviewerName, -helpful)
 
-## TODO: merge with metadata to get product name
-
 ## Export CSV
 write.csv(amz_recall, "recalled_amz.csv", row.names = FALSE)
 
@@ -29,3 +26,12 @@ amz_recall %>%
   filter(asin == "B001DGYKG0") %>%
   write.csv("single_recalled_amz_2.csv", row.names = FALSE)
 
+## Load metadata
+metadata <- read.csv("../data/processed/meta_Grocery_and_Gourmet_Food.csv",
+                     stringsAsFactors = FALSE)
+
+asins_titles <- metadata %>%
+  filter(asin %in% recalled$asin) %>%
+  select(asin, title)
+
+write.csv(asins_titles, "asins_titles.csv")

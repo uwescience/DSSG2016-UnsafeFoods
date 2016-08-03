@@ -183,7 +183,9 @@ d3.csv("recalled_amz.csv", function(error, data) {
     }
 
     // Starting plot
-    updatePlot("B000DZDJ0K");
+    var sel = document.getElementById("opts");
+    var initial = sel.options[sel.selectedIndex].value; // Find selected value
+    updatePlot(initial);
 
     // Change plot when a different opt is selected
     d3.select('#opts')
