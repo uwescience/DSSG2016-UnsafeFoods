@@ -65,7 +65,7 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
         .append("text")
         .classed("label", true)
         .attr("x", w)
-        .attr("y", -6)
+        .attr("y", 40)
         .style("text-anchor", "end")
         .text("Date");
 
@@ -76,8 +76,8 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
         .append("text")
         .classed("label", true)
         .attr("transform", "rotate(-90)")
-        .attr("y", 6)
-        .attr("dy", ".71em")
+        .attr("y", 3)
+        .attr("dy", "-2.3em")
         .style("text-anchor", "end")
         .text("Rating");
 
