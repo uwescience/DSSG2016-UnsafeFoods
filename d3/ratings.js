@@ -16,6 +16,29 @@ var y = d3.scale.linear()
 var xVar = "date",
     yVar = "rating";
 
+var asin;
+
+d3.csv("recalled_asins_only.csv", function(error, data) {
+    var select = d3.select("body")
+            .append("div")
+            .append("select");
+
+    select
+        .on("change", function(d) {
+            asin = d3.select(this).property("value");
+            console.log(asin);
+        });
+
+    select.selectAll("option")
+        .data(data)
+        .enter()
+        .append("option")
+        .attr("value", function (d) { return d.asin; })
+        .text(function (d) { return d.asin; })
+        .property("selected", function(d){ return d.asin === "B000DZDJ0K"; });
+});
+
+
 // Load data
 d3.csv("recalled_amz.csv", function(error, data) {
     // Read in the data
@@ -25,9 +48,9 @@ d3.csv("recalled_amz.csv", function(error, data) {
         d.rating = +d.overall;
     });
 
-    var filteredData = data.filter(function(d) { return d.asin == "B00651OEHS"; });
+    var filteredData = data.filter(function(d) { return d.asin == asin; });
     console.log(filteredData);
-    
+        
     // Force directed layout
     var force = d3.layout.force()
             .nodes(filteredData)
