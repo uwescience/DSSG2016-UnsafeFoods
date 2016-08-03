@@ -34,12 +34,6 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
             .gravity(0)
             .chargeDistance(20);
     
-    // Calculate maxima and minima and use these to set x/y domain
-    var xMax = d3.max(data, function(d) { return d[xVar]; }),
-        xMin = d3.min(data, function(d) { return d[xVar]; }),
-        yMax = d3.max(data, function(d) { return d[yVar]; }),
-        yMin = d3.min(data, function(d) { return d[yVar]; });
-
     // Axis domains
     x.domain(d3.extent(data, function(d) { return d.date; }));
     y.domain(d3.extent(data, function(d) { return d.rating; })).nice();
