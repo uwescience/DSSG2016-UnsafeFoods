@@ -1,6 +1,6 @@
 
 // Set width/height/margins
-var margin = {top: 20, right: 190, bottom: 30, left: 50};
+var margin = {top: 50, right: 190, bottom: 50, left: 50};
 var w = 1000 - margin.left - margin.right;
 var h = 480 - margin.top - margin.bottom;
 var radius = 6;
@@ -132,10 +132,13 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
 
     // Jittering
     // http://bl.ocks.org/rpgove/10603627
+    
     force.start();
 
     function tick(e) {
-        node.each(moveTowardDataPosition(e.alpha));
+        node.each(moveTowardDataPosition(e.alpha))
+            .each(collide(e.alpha));
+
         node.attr("cx", function(d) { return d.x; })
             .attr("cy", function(d) { return d.y; });
     }
@@ -147,11 +150,10 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
         };
     }
 
-    // Resolve collisions between nodes.
     function collide(alpha) {
         var quadtree = d3.geom.quadtree(data);
         return function(d) {
-            var r = d.radius + radius + padding,
+            var r = (2 * radius) + padding,
                 nx1 = d.x - r,
                 nx2 = d.x + r,
                 ny1 = d.y - r,
@@ -161,8 +163,7 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
                     var x = d.x - quad.point.x,
                         y = d.y - quad.point.y,
                         l = Math.sqrt(x * x + y * y),
-                        r = d.radius + quad.point.radius +
-                            (d.color !== quad.point.color) * padding;
+                        r = (2 * radius) + padding;
                     if (l < r) {
                         l = (l - r) / l * alpha;
                         d.x -= x *= l;
