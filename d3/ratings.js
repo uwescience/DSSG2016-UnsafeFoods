@@ -16,29 +16,6 @@ var y = d3.scale.linear()
 var xVar = "date",
     yVar = "rating";
 
-var asin;
-
-d3.csv("recalled_asins_only.csv", function(error, data) {
-    var select = d3.select("body")
-            .append("div")
-            .append("select");
-
-    select
-        .on("change", function(d) {
-            asin = d3.select(this).property("value");
-            console.log(asin);
-        });
-
-    select.selectAll("option")
-        .data(data)
-        .enter()
-        .append("option")
-        .attr("value", function (d) { return d.asin; })
-        .text(function (d) { return d.asin; })
-        .property("selected", function(d){ return d.asin === "B000DZDJ0K"; });
-});
-
-
 // Load data
 d3.csv("recalled_amz.csv", function(error, data) {
     // Read in the data
@@ -48,18 +25,6 @@ d3.csv("recalled_amz.csv", function(error, data) {
         d.rating = +d.overall;
     });
 
-    var filteredData = data.filter(function(d) { return d.asin == asin; });
-    console.log(filteredData);
-        
-    // Force directed layout
-    var force = d3.layout.force()
-            .nodes(filteredData)
-            .size([w, h])
-            .on("tick", tick)
-            .charge(-1)
-            .gravity(0)
-            .chargeDistance(20);
-    
     // Axis domains
     x.domain(d3.extent(data, function(d) { return d.date; }));
     y.domain(d3.extent(data, function(d) { return d.rating; })).nice();
@@ -116,11 +81,27 @@ d3.csv("recalled_amz.csv", function(error, data) {
     var pointcolor = "teal";
     var in_dur = 50;            // Transition duration for bringing in tooltips
     var out_dur = 500;          // Duration for removing tooltips
-    
-    // Plot points
-    var node = svg.selectAll(".dot")
-            .data(filteredData)
-            .enter().append("circle")
+
+    // Update plot when new ASIN is selected
+    function updatePlot(newData) {
+
+        // Subset data for selected ASIN
+        var filteredData = data.filter(function(d) { return d.asin == newData; });
+
+        // Force directed layout
+        var force = d3.layout.force()
+                .nodes(filteredData)
+                .size([w, h])
+                .on("tick", tick)
+                .charge(-1)
+                .gravity(0)
+                .chargeDistance(20);
+
+        // Bind data to points
+        var node = svg.selectAll(".dot")
+                .data(filteredData);
+        
+        node.enter().append("circle")
             .attr("class", "dot")
             .attr("r", radius)
             .style("fill", pointcolor)
@@ -150,51 +131,64 @@ d3.csv("recalled_amz.csv", function(error, data) {
 
                                         });
 
-    // Jittering
-    // http://bl.ocks.org/rpgove/10603627
-    
-    force.start();
+        // Remove old elements
+        node.exit().remove();
 
-    function tick(e) {
-        node.each(moveTowardDataPosition(e.alpha))
-            .each(collide(e.alpha));
+        // Begin arranging points
+        force.start();
 
-        node.attr("cx", function(d) { return d.x; })
-            .attr("cy", function(d) { return d.y; });
-    }
-    
-    function moveTowardDataPosition(alpha) {
-        return function(d) {
-            d.x += (x(d[xVar]) - d.x) * 0.1 * alpha;
-            d.y += (y(d[yVar]) - d.y) * 0.1 * alpha;
-        };
-    }
+        function tick(e) {
+            node.each(moveTowardDataPosition(e.alpha))
+                .each(collide(e.alpha));
 
-    function collide(alpha) {
-        var quadtree = d3.geom.quadtree(filteredData);
-        return function(d) {
-            var r = (2 * radius) + padding,
-                nx1 = d.x - r,
-                nx2 = d.x + r,
-                ny1 = d.y - r,
-                ny2 = d.y + r;
-            quadtree.visit(function(quad, x1, y1, x2, y2) {
-                if (quad.point && (quad.point !== d)) {
-                    var x = d.x - quad.point.x,
-                        y = d.y - quad.point.y,
-                        l = Math.sqrt(x * x + y * y),
-                        r = (2 * radius) + padding;
-                    if (l < r) {
-                        l = (l - r) / l * alpha;
-                        d.x -= x *= l;
-                        d.y -= y *= l;
-                        quad.point.x += x;
-                        quad.point.y += y;
+            node.attr("cx", function(d) { return d.x; })
+                .attr("cy", function(d) { return d.y; });
+        }
+        
+        function moveTowardDataPosition(alpha) {
+            return function(d) {
+                d.x += (x(d[xVar]) - d.x) * 0.1 * alpha;
+                d.y += (y(d[yVar]) - d.y) * 0.1 * alpha;
+            };
+        }
+
+        function collide(alpha) {
+            var quadtree = d3.geom.quadtree(filteredData);
+            return function(d) {
+                var r = (2 * radius) + padding,
+                    nx1 = d.x - r,
+                    nx2 = d.x + r,
+                    ny1 = d.y - r,
+                    ny2 = d.y + r;
+                quadtree.visit(function(quad, x1, y1, x2, y2) {
+                    if (quad.point && (quad.point !== d)) {
+                        var x = d.x - quad.point.x,
+                            y = d.y - quad.point.y,
+                            l = Math.sqrt(x * x + y * y),
+                            r = (2 * radius) + padding;
+                        if (l < r) {
+                            l = (l - r) / l * alpha;
+                            d.x -= x *= l;
+                            d.y -= y *= l;
+                            quad.point.x += x;
+                            quad.point.y += y;
+                        }
                     }
-                }
-                return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
-            });
-        };
+                    return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+                });
+            };
+        }
+
     }
+
+    // Starting plot
+    updatePlot("B000DZDJ0K");
+
+    // Change plot when a different opt is selected
+    d3.select('#opts')
+        .on('change', function() {
+            var newData = d3.select(this).property("value");
+            updatePlot(newData);
+        });    
     
 });
