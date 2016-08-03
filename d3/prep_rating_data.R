@@ -30,4 +30,8 @@ write.csv(amz_recall, "recalled_amz.csv", row.names = FALSE)
 amz_recall %>%
   filter(asin == "B000DZDJ0K") %>%
   write.csv("single_recalled_amz.csv", row.names = FALSE)
-  
+
+amz_recall %>%
+  filter(asin == "B001DGYKG0") %>%
+  write.csv("single_recalled_amz_2.csv", row.names = FALSE)
+
