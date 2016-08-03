@@ -87,7 +87,7 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
             .attr("class", "tooltip")
             .style("opacity", 0);
 
-    var pointcolor = "black";
+    var pointcolor = "teal";
     var in_dur = 50;            // Transition duration for bringing in tooltips
     var out_dur = 500;          // Duration for removing tooltips
     
@@ -111,7 +111,7 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
                                                   + "px");
                                            
                                            d3.select(this)
-                                           .style("fill", "red");
+                                           .style("fill", "goldenrod");
                                          })
             .on("mouseout", function(d) { tooltip.transition()
                                           .duration(out_dur)
