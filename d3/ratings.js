@@ -110,7 +110,8 @@ d3.csv("recalled_amz.csv", function(error, data) {
             .on("mouseover", function(d) { tooltip.transition()
                                            .duration(in_dur)
                                            .style("opacity", .9);
-                                           tooltip.html("<b>" + d.date + "</b><br>"
+                                           tooltip.html("<b>" + d.summary + "</b><br>"
+                                                        + "<i>" + d.date + "</i><br>"
                                                         + d.reviewText)
                                            .style("left", (d3.event.pageX + 14)
                                                   + "px")
