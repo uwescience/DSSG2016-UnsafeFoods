@@ -17,7 +17,7 @@ var xVar = "date",
     yVar = "rating";
 
 // Load data
-d3.csv("single_recalled_amz.csv", function(error, data) {
+d3.csv("recalled_amz.csv", function(error, data) {
     // Read in the data
     if (error) return console.warn(error);
     data.forEach(function(d) {
@@ -25,9 +25,12 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
         d.rating = +d.overall;
     });
 
+    var filteredData = data.filter(function(d) { return d.asin == "B00651OEHS"; });
+    console.log(filteredData);
+    
     // Force directed layout
     var force = d3.layout.force()
-            .nodes(data)
+            .nodes(filteredData)
             .size([w, h])
             .on("tick", tick)
             .charge(-1)
@@ -93,7 +96,7 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
     
     // Plot points
     var node = svg.selectAll(".dot")
-            .data(data)
+            .data(filteredData)
             .enter().append("circle")
             .attr("class", "dot")
             .attr("r", radius)
@@ -145,7 +148,7 @@ d3.csv("single_recalled_amz.csv", function(error, data) {
     }
 
     function collide(alpha) {
-        var quadtree = d3.geom.quadtree(data);
+        var quadtree = d3.geom.quadtree(filteredData);
         return function(d) {
             var r = (2 * radius) + padding,
                 nx1 = d.x - r,
