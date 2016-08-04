@@ -1,4 +1,26 @@
-// Set width/height/margins
+// Load ASINs and product titles into the select dropdown
+d3.csv("asins_titles.csv", function(error, data) {
+    var select = d3.select("body")
+            .append("div")
+            .append("select")
+            .attr("id", "opts")
+            .attr("class", "js-example-basic-single");
+    
+    select.selectAll("option")
+        .data(data)
+        .enter()
+        .append("option")
+        .attr("value", function (d) { return d.asin; })
+        .text(function (d) { return d.title; })
+        .property("selected", function(d){ return d.asin === "B001DGYKG0"; });
+
+    $(document).ready(function() {
+        $(".js-example-basic-single").select2();
+    });
+
+});
+
+// Set width/height/margins for vis
 var margin = {top: 50, right: 190, bottom: 50, left: 50};
 var w = 1000 - margin.left - margin.right;
 var h = 480 - margin.top - margin.bottom;
