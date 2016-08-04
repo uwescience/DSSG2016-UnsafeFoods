@@ -144,7 +144,7 @@ d3.csv("recalled_amz.csv", function(error, data) {
                            + "px");
                 
                 d3.select(this)
-                    .style("fill", "goldenrod");
+                    .style("fill", "goldenrod"); // Make points change color
             })
             .on("mouseout", function(d) {
                 tooltip.transition()
