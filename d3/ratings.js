@@ -1,3 +1,9 @@
+// Add text with instructions above dropdown
+d3.select("body")
+    .append("div")
+    .append("text")
+    .text("Select product:");
+
 // Load ASINs and product titles into the select dropdown
 d3.csv("asins_titles.csv", function(error, data) {
     var select = d3.select("body")
