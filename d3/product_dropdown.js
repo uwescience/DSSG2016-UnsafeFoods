@@ -3,13 +3,9 @@ d3.csv("asins_titles.csv", function(error, data) {
     var select = d3.select("body")
             .append("div")
             .append("select")
-            .attr("id", "opts");
-
-    select
-        .on("change", function(d) {
-            var value = d3.select(this).property("value");
-        });
-
+            .attr("id", "opts")
+            .attr("class", "js-example-basic-single");
+    
     select.selectAll("option")
         .data(data)
         .enter()

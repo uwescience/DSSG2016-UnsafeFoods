@@ -1,4 +1,3 @@
-
 // Set width/height/margins
 var margin = {top: 50, right: 190, bottom: 50, left: 50};
 var w = 1000 - margin.left - margin.right;
@@ -187,11 +186,11 @@ d3.csv("recalled_amz.csv", function(error, data) {
     var initial = sel.options[sel.selectedIndex].value; // Find selected value
     updatePlot(initial);
 
-    // Change plot when a different opt is selected
-    d3.select('#opts')
-        .on('change', function() {
-            var newData = d3.select(this).property("value");
+    // Update plot when new product is selected
+    $("#opts").select2()
+        .on("select2:select", function() {
+            var newData = $("#opts").val();
             updatePlot(newData);
-        });    
+        });
     
 });
