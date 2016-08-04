@@ -12,7 +12,9 @@ recalled <- read.csv("../github_data/asin_intersection_full.csv",
 
 ## Keep only recalled products
 amz_recall <- filter(amz, asin %in% recalled$asin) %>%
-  select(-reviewerID, -reviewerName, -helpful)
+  select(-reviewerID, -reviewerName, -helpful) %>%
+  ## Merge in initiation date
+  merge(recalled[, c("asin", "initiation_date")], by = "asin")
 
 ## Export CSV
 write.csv(amz_recall, "recalled_amz.csv", row.names = FALSE)

@@ -52,6 +52,7 @@ d3.csv("recalled_amz.csv", function(error, data) {
     data.forEach(function(d) {
         d.date = new Date(d.unixReviewTime * 1000);
         d.rating = +d.overall;
+        d.recalldate = new Date(d.initiation_date);
     });
 
     // Axis domains
