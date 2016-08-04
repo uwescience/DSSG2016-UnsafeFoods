@@ -1,6 +1,7 @@
 // Add text with instructions above dropdown
 d3.select("body")
     .append("div")
+    .attr("align", "center")
     .append("text")
     .text("Select product:");
 
@@ -8,6 +9,7 @@ d3.select("body")
 d3.csv("asins_titles.csv", function(error, data) {
     var select = d3.select("body")
             .append("div")
+            .attr("align", "center")
             .append("select")
             .attr("id", "opts")
             .attr("class", "js-example-basic-single");
