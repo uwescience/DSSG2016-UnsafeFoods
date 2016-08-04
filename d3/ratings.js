@@ -5,7 +5,8 @@ d3.csv("asins_titles.csv", function(error, data) {
             .append("select")
             .attr("id", "opts")
             .attr("class", "js-example-basic-single");
-    
+
+    // Start dropdown with ASIN "B001DGYKG0" selected
     select.selectAll("option")
         .data(data)
         .enter()
@@ -14,6 +15,7 @@ d3.csv("asins_titles.csv", function(error, data) {
         .text(function (d) { return d.title; })
         .property("selected", function(d){ return d.asin === "B001DGYKG0"; });
 
+    // Initialize Select2
     $(document).ready(function() {
         $(".js-example-basic-single").select2();
     });
@@ -50,12 +52,12 @@ d3.csv("recalled_amz.csv", function(error, data) {
     x.domain(d3.extent(data, function(d) { return d.date; }));
     y.domain(d3.extent(data, function(d) { return d.rating; })).nice();
 
-    // Draw x axis
+    // Create x axis
     var xAxis = d3.svg.axis()
             .ticks(8)
             .scale(x);
 
-    // Draw y axis
+    // Create y axis
     var yAxis = d3.svg.axis()
             .ticks(5)
             .scale(y)
@@ -69,7 +71,7 @@ d3.csv("recalled_amz.csv", function(error, data) {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
-    // Add x axis label
+    // Draw x axis and label
     svg.append("g")
         .classed("x axis", true)
         .attr("transform", "translate(0," + h + ")")
@@ -81,7 +83,7 @@ d3.csv("recalled_amz.csv", function(error, data) {
         .style("text-anchor", "end")
         .text("Date");
 
-    // Add y axis label
+    // Draw y axis and label
     svg.append("g")
         .classed("y axis", true)
         .call(yAxis)
@@ -93,13 +95,12 @@ d3.csv("recalled_amz.csv", function(error, data) {
         .style("text-anchor", "end")
         .text("Rating");
 
-
     // Tooltips for points
     var tooltip = d3.select("body").append("div")
             .attr("class", "tooltip")
             .style("opacity", 0);
 
-    var pointcolor = "teal";
+    var pointcolor = "teal";    // Color of points
     var in_dur = 50;            // Transition duration for bringing in tooltips
     var out_dur = 500;          // Duration for removing tooltips
 
@@ -109,7 +110,7 @@ d3.csv("recalled_amz.csv", function(error, data) {
         // Subset data for selected ASIN
         var filteredData = data.filter(function(d) { return d.asin == newData; });
 
-        // Force directed layout
+        // Create force directed layout
         var force = d3.layout.force()
                 .nodes(filteredData)
                 .size([w, h])
@@ -121,37 +122,41 @@ d3.csv("recalled_amz.csv", function(error, data) {
         // Bind data to points
         var node = svg.selectAll(".dot")
                 .data(filteredData);
-        
+
+        // Plot points
         node.enter().append("circle")
             .attr("class", "dot")
             .attr("r", radius)
             .style("fill", pointcolor)
             .attr("cx", function(d) { return x(d.date); })
             .attr("cy", function(d) { return y(d.rating); })
-            .on("mouseover", function(d) { tooltip.transition()
-                                           .duration(in_dur)
-                                           .style("opacity", .9);
-                                           tooltip.html("<b>" + d.summary + "</b><br>"
-                                                        + "<i>" + d.date + "</i><br>"
-                                                        + d.reviewText)
-                                           .style("left", (d3.event.pageX + 14)
-                                                  + "px")
-                                           .style("top", (d3.event.pageY - 28)
-                                                  + "px");
-                                           
-                                           d3.select(this)
-                                           .style("fill", "goldenrod");
-                                         })
-            .on("mouseout", function(d) { tooltip.transition()
-                                          .duration(out_dur)
-                                          .style("opacity", 0);
-                                          
-                                          d3.select(this)
-                                          .transition()
-                                          .duration(out_dur)
-                                          .style("fill", pointcolor);
+        // Show tooltips and change point color on mouseover
+            .on("mouseover", function(d) {
+                tooltip.transition()
+                    .duration(in_dur)
+                    .style("opacity", .9);
+                tooltip.html("<b>" + d.summary + "</b><br>"
+                             + "<i>" + d.date + "</i><br>"
+                             + d.reviewText)
+                    .style("left", (d3.event.pageX + 14)
+                           + "px")
+                    .style("top", (d3.event.pageY - 28)
+                           + "px");
+                
+                d3.select(this)
+                    .style("fill", "goldenrod");
+            })
+            .on("mouseout", function(d) {
+                tooltip.transition()
+                    .duration(out_dur)
+                    .style("opacity", 0);
+                
+                d3.select(this)
+                    .transition()
+                    .duration(out_dur)
+                    .style("fill", pointcolor);
 
-                                        });
+            });
 
         // Remove old elements
         node.exit().remove();
@@ -159,6 +164,9 @@ d3.csv("recalled_amz.csv", function(error, data) {
         // Begin arranging points
         force.start();
 
+        // Function control final point location -- first tries to move points
+        // to their x, y location, then detects collisions and adjusts
+        // accordingly
         function tick(e) {
             node.each(moveTowardDataPosition(e.alpha))
                 .each(collide(e.alpha));
@@ -166,7 +174,7 @@ d3.csv("recalled_amz.csv", function(error, data) {
             node.attr("cx", function(d) { return d.x; })
                 .attr("cy", function(d) { return d.y; });
         }
-        
+
         function moveTowardDataPosition(alpha) {
             return function(d) {
                 d.x += (x(d[xVar]) - d.x) * 0.1 * alpha;
@@ -203,9 +211,10 @@ d3.csv("recalled_amz.csv", function(error, data) {
 
     }
 
-    // Starting plot
+    // Initial plot to be shown when page is loaded. Finds the selected value of
+    // the dropdown list and calls updatePlot() to generate the plot.
     var sel = document.getElementById("opts");
-    var initial = sel.options[sel.selectedIndex].value; // Find selected value
+    var initial = sel.options[sel.selectedIndex].value;
     updatePlot(initial);
 
     // Update plot when new product is selected
