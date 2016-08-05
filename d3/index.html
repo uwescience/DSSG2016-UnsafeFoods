@@ -8,61 +8,33 @@
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="https://d3js.org/d3-time.v1.min.js"></script>
     <script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+    
     <script
        src="http://code.jquery.com/jquery-3.1.0.min.js"
        integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
        crossorigin="anonymous">
     </script>
 
+    <link href="style.css" type="text/css" rel="stylesheet" />
+
     <!-- Use Select2 for dropdown menu -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <link
+       href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"
+       rel="stylesheet" />
+    <script
+       src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js">
+    </script>
 
   </head>
-
-  <style>
-
-    body {
-    font: 14px sans-serif;
-    }
-
-    .axis line,
-    .axis text {
-    font-size: 14px;
-    }
-
-    .axis path,
-    .axis line {
-    fill: none;
-    stroke: #E6E7E8;
-    shape-rendering: crispEdges;
-    }
-
-    circle {
-    stroke-width: 1px;
-    }
-
-    .tooltip {
-    position: absolute;
-    pointer-events: none;
-    background: #ffffff;
-    display: inline;
-    max-width: 300px;
-    border-radius: 8px;
-    padding: 2px;
-    }
-
-    svg {
-    display: block;
-    margin: 0 auto;
-    }
-
-  </style>
   
   <body>
 
-    <div id="scatter"></div>
+    <div id="vis"></div>
 
+    <!-- Dropdown -->
+    <p class="dropdown-label">Select product:</p>
+    <div id="dropdown"></div>
+    
     <!-- Visualization -->
     <script type="text/javascript" src="ratings.js"></script>
     

@@ -1,14 +1,6 @@
-// Add text with instructions above dropdown
-d3.select("body")
-    .append("div")
-    .attr("align", "center")
-    .append("text")
-    .text("Select product:");
-
 // Load ASINs and product titles into the select dropdown
 d3.csv("asins_titles.csv", function(error, data) {
-    var select = d3.select("body")
-            .append("div")
+    var select = d3.select("#dropdown")
             .attr("align", "center")
             .append("select")
             .attr("id", "opts")
@@ -73,7 +65,7 @@ d3.csv("recalled_amz.csv", function(error, data) {
             .orient("left");
     
     // Create SVG
-    var svg = d3.select("#scatter")
+    var svg = d3.select("#vis")
             .append("svg")
             .attr("width", w + margin.left + margin.right)
             .attr("height", h + margin.top + margin.bottom)
@@ -136,7 +128,6 @@ d3.csv("recalled_amz.csv", function(error, data) {
         node.enter().append("circle")
             .attr("class", "dot")
             .attr("r", radius)
-            .style("fill", pointcolor)
             .attr("cx", function(d) { return x(d.date); })
             .attr("cy", function(d) { return y(d.rating); })
         // Show tooltips and change point color on mouseover
@@ -151,9 +142,7 @@ d3.csv("recalled_amz.csv", function(error, data) {
                            + "px")
                     .style("top", (d3.event.pageY - 28)
                            + "px");
-                
-                d3.select(this)
-                    .style("fill", "goldenrod"); // Make points change color
+
             })
             .on("mouseout", function(d) {
                 tooltip.transition()
