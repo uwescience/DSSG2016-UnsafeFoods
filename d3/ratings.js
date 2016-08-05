@@ -170,47 +170,37 @@ d3.csv("recalled_amz.csv", function(error, data) {
         // Remove old elements
         node.exit().remove();
 
-        // --- Add recall date [IN PROGRESS] -----------------------------------
-
-        // Hard-coded line that doesn't update:
-        // svg.append("line")
-        //     .attr("y1", y(1))
-        //     .attr("y2", y(5))
-        //     .attr("x1", function() { return x(new Date("2012-04-01")); })
-        //     .attr("x2", function() { return x(new Date("2012-04-01")); })
-        //     .attr("stroke", "purple")
-        //     .attr("stroke-linecap", "round")
-        //     .attr("stroke-width", "5");
-
-        // Recall date for this product:
-        console.log(d3.map(filteredData, function(d){return d.recalldate;}).keys()[0]);
-        console.log(new Date(d3.map(filteredData, function(d){return d.recalldate;}).keys()[0]));
+        // Add line showing recall date
         
+        // Use first row of filteredData to find the recall date -- this works
+        // because we only have one recall (and hence one recall date) per
+        // product, but if there were multiple it would have to be different
+        var rowZero = filteredData[0]; 
+             
         var recallLine = svg.selectAll(".line")
-                .data(filteredData);
-
-        // Attempt to dynamically plot vertical line (not working)
-        recallLine.enter().append("line")
+                .data([rowZero]); // Data needs to be an array!!
+        
+        recallLine.enter()
+            .append("line")
             .attr("class", "line")
             .attr("y1", y(1))
             .attr("y2", y(5))
-            .attr("x1", function() {
-                return x(new Date(d3.map(filteredData, function(e){
-                    return e.recalldate;
-                }).keys()[0]));
-            })
-            .attr("x2", function() {
-                return x(new Date(d3.map(filteredData, function(e){
-                    return e.recalldate;
-                }).keys()[0]));
-            })
             .attr("stroke", "purple")
             .attr("stroke-linecap", "round")
             .attr("stroke-width", "5");
+        
+        // Move vertical line to recall date
+        recallLine.transition()
+            .duration(400)
+            .attr("x1", function(d) {
+                console.dir(d);
+                return x(new Date(d.recalldate));
+            })
+            .attr("x2", function(d) {
+                return x(new Date(d.recalldate));
+            });
 
         recallLine.exit().remove();
-        
-        // ---------------------------------------------------------------------
         
         // Begin arranging points
         force.start();
@@ -276,3 +266,7 @@ d3.csv("recalled_amz.csv", function(error, data) {
         });
     
 });
+
+// Products that might be good for demo:
+// O.N.E. Coconut Water
+// Newman's Own Con Queso Salsa
