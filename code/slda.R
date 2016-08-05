@@ -17,14 +17,11 @@ json_file <- "../data/raw/reviews_Grocery_and_Gourmet_Food.json"
 amz <- stream_in(file(json_file))
 
 ## Load list of recalled products
-recalled <- read.csv("../data/processed/recalls_upcs_asins_joined.csv",
+recalled <- read.csv("../github_data/asin_intersection_full.csv",
                      stringsAsFactors = FALSE)
 
 ## Extract vector of ASINs of recalled products
-recalled_asins <- unique(recalled$asins) %>%
-  sapply(strsplit, ";") %>%
-  unname() %>%
-  unlist()
+recalled_asins <- unique(recalled$asin)
 
 ## Add recalled/not recalled column to Amazon reviews based on vector of ASINs
 amz <- mutate(amz, recalled = ifelse(asin %in% recalled_asins, 1, 0))
