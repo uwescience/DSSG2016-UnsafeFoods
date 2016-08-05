@@ -19,15 +19,6 @@ amz_recall <- filter(amz, asin %in% recalled$asin) %>%
 ## Export CSV
 write.csv(amz_recall, "recalled_amz.csv", row.names = FALSE)
 
-## Export a single product for testing
-amz_recall %>%
-  filter(asin == "B000DZDJ0K") %>%
-  write.csv("single_recalled_amz.csv", row.names = FALSE)
-
-amz_recall %>%
-  filter(asin == "B001DGYKG0") %>%
-  write.csv("single_recalled_amz_2.csv", row.names = FALSE)
-
 ## Load metadata
 metadata <- read.csv("../data/processed/meta_Grocery_and_Gourmet_Food.csv",
                      stringsAsFactors = FALSE)
