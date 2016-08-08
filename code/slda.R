@@ -2,11 +2,18 @@
 ####  Supervised LDA  ####
 ##########################
 
-## Load required packages
-library("jsonlite")
-library("dplyr")
-library("tm")
-library("lda")
+## Packages
+package_reqs <- c("jsonlite", "dplyr", "tm", "lda")
+
+## Install any necessary packages
+for (pkg in package_reqs) {
+  if(!pkg %in% installed.packages()) {
+    install.packages(pkg)
+  }
+}
+
+## Load packages
+sapply(package_reqs, library, character.only = TRUE)
 
 ## Source file that contains, among other things, a function to put documents
 ## into the format required by the lda package
@@ -26,21 +33,32 @@ recalled_asins <- unique(recalled$asin)
 ## Add recalled/not recalled column to Amazon reviews based on vector of ASINs
 amz <- mutate(amz, recalled = ifelse(asin %in% recalled_asins, 1, 0))
 
+## Extract vector of non-recalled ASINs
+non_recalled_asins <- unique(amz[amz$recalled == 0, "asin"])
+
 ## Set seed for reproducibility
 set.seed(123)
 
-## Subset data -- 1000 rows each for recalled and non-recalled reviews
-amz_sub <- amz %>%
-  filter(reviewText != "") %>%          # Don't want any reviews that are empty
-  group_by(recalled) %>%
-  sample_n(1000)
+## Randomly samply 80% each of recalled and non-recalled asins for training set
+training_asins <- c(sample(recalled_asins,
+                           size = round(length(recalled_asins) * 0.8)),
+                    sample(non_recalled_asins,
+                           size = round(length(non_recalled_asins) * 0.8)))
+
+## Use remaining asins for test set
+testing_asins <- unique(amz$asin)[!unique(amz$asin) %in% training_asins]
+
+## Subset data to create training set (and remove any empty reviews)
+training <- filter(amz, asin %in% training_asins & reviewText != "") %>%
+  sample_n(10000) %>%
+  arrange(recalled)
 
 ## Vector of Amazon review text
-reviews <- amz_sub$reviewText
+training_reviews <- training$reviewText
 
 ## Vector of recalled/not-recalled column to be used as annotations for slda
 ## model
-annotations <- as.integer(amz_sub$recalled)
+annotations <- as.integer(training$recalled)
 
 ## Process data and format as needed for the lda package
 vec_to_lda_corpus <- function(vec) {
@@ -58,7 +76,7 @@ vec_to_lda_corpus <- function(vec) {
   ## compute the table of terms:
   term.table <- table(unlist(doc.list))
   term.table <- sort(term.table, decreasing = TRUE)
-
+  
   ## stopwords:
   stop_words <- stopwords("SMART")
 
@@ -74,7 +92,7 @@ vec_to_lda_corpus <- function(vec) {
   return(list(docs = docs, vocab = vocab))
 }
 
-documents <- vec_to_lda_corpus(reviews)
+documents <- vec_to_lda_corpus(training_reviews)
 
 ## Documents that are length zero need to get removed. These exist because of
 ## cases like having a review that contains only the word "A+" -- the + gets
@@ -104,16 +122,15 @@ fit <- slda.em(documents = docs_nonzero,
 
 
 ## Test set
-test <- amz %>%
-  filter(reviewText != "") %>%
-  group_by(recalled) %>%
-  sample_n(10)
-
+testing <- filter(amz, asin %in% testing_asins & reviewText != "") %>%
+  sample_n(2000) %>%
+  arrange(recalled)
+ 
 ## Documents
-test_docs <- vec_to_lda_corpus(test$reviewText)
+test_docs <- vec_to_lda_corpus(testing$reviewText)
 
 ## Annotations (0 = not recalled, 1 = recalled)
-test_annotations <- as.integer(test$recalled)
+test_annotations <- as.integer(testing$recalled)
 
 ## Remove any zero-length documents that might exist. Also remove their
 ## corresponding annotations
@@ -122,15 +139,8 @@ test_docs_nonzero <- test_docs$docs[!test_remove]
 test_annotations <- test_annotations[!test_remove]
 
 ## Test model
-test_prediction <- slda.predict(documents = docs_nonzero,
+test_prediction <- slda.predict(documents = test_docs_nonzero,
                                 topics = fit$topics,
                                 model = fit$model,
                                 alpha = 1.0,
                                 eta = 0.1)
-
-(sum(test_prediction[1:999] < 0) + sum(test_prediction[1000:1999] > 0)) / 1999
-
-## TODO:
-## - Use more imbalanced dataset (many more not-recalled than recalled products)
-## - Split the training and test sets so that individual products do not appear
-## in both sets
