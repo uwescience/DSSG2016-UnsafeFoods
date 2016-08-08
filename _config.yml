@@ -1,7 +1,5 @@
 # Permalinks
-# Use of `relative_permalinks` ensures post links from the index work properly.
 permalink:           pretty
-# relative_permalinks: true
 
 # Setup
 title:               Mining Online Data for Early Identification of Unsafe Food Products
