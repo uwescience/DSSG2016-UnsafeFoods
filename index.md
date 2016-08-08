@@ -3,7 +3,7 @@ layout: default
 ---
 
 <a href="http://escience.washington.edu/dssg/">
-<img src="{{ site.url }}{{ site.baseurl }} /assets/images/dssg.png">
+<img src="{{ site.url }}{{ site.baseurl }}/assets/images/dssg.png">
 </a>
 
 In this study, we aim to investigate whether text mining of food product reviews
