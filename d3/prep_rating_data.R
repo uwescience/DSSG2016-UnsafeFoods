@@ -17,14 +17,18 @@ amz_recall <- filter(amz, asin %in% recalled$asin) %>%
   merge(recalled[, c("asin", "initiation_date")], by = "asin")
 
 ## Export CSV
-write.csv(amz_recall, "recalled_amz.csv", row.names = FALSE)
+write.csv(amz_recall, "../data/processed/recalled_amz_reviews.csv",
+          row.names = FALSE)
 
 ## Load metadata
 metadata <- read.csv("../data/processed/meta_Grocery_and_Gourmet_Food.csv",
                      stringsAsFactors = FALSE)
 
+## Create table of ASINs with associated product title
 asins_titles <- metadata %>%
   filter(asin %in% recalled$asin) %>%
   select(asin, title)
 
-write.csv(asins_titles, "asins_titles.csv")
+## Export CSV
+write.csv(asins_titles, "../data/processed/asins_with_product_titles.csv",
+          row.names = FALSE)
