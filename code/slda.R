@@ -144,3 +144,7 @@ test_prediction <- slda.predict(documents = test_docs_nonzero,
                                 model = fit$model,
                                 alpha = 1.0,
                                 eta = 0.1)
+
+## View summary of predictions for non-recalled and recalled products
+summary(test_prediction[which(test_annotations == 0)])
+summary(test_prediction[which(test_annotations == 1)])
