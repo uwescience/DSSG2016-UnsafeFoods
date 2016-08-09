@@ -1,0 +1,44 @@
+body {
+    font: 14px sans-serif;
+}
+
+.axis line,
+.axis text {
+    font-size: 14px;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #E6E7E8;
+    shape-rendering: crispEdges;
+}
+
+circle {
+    stroke-width: 1px;
+    fill: teal;
+}
+
+circle:hover {
+    fill: goldenrod;
+}
+
+.tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: #ffffff;
+    display: inline;
+    max-width: 300px;
+    border-radius: 8px;
+    padding: 2px;
+}
+
+svg {
+    display: block;
+    margin: 0 auto;
+}
+
+.dropdown-label {
+    text-align: center;
+}
+
