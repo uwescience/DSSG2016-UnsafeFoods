@@ -1,5 +1,5 @@
 // Load ASINs and product titles into the select dropdown
-d3.csv("asins_titles.csv", function(error, data) {
+d3.csv("../data/processed/asins_with_product_titles.csv", function(error, data) {
     var select = d3.select("#dropdown")
             .attr("align", "center")
             .append("select")
@@ -40,7 +40,7 @@ var xVar = "date",
     yVar = "rating";
 
 // Load data
-d3.csv("recalled_amz.csv", function(error, data) {
+d3.csv("../data/processed/recalled_amz_reviews.csv", function(error, data) {
     // Read in the data
     if (error) return console.warn(error);
     data.forEach(function(d) {
