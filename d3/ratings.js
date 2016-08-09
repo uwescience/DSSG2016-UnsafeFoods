@@ -148,11 +148,6 @@ d3.csv("../data/processed/recalled_amz_reviews.csv", function(error, data) {
                 tooltip.transition()
                     .duration(out_dur)
                     .style("opacity", 0);
-                
-                d3.select(this)
-                    .transition()
-                    .duration(out_dur)
-                    .style("fill", pointcolor);
 
             });
 
