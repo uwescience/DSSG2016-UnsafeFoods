@@ -106,7 +106,7 @@ annotations <- annotations[!remove]
 ## slda.em(documents, K, vocab, num.e.iterations, num.m.iterations, alpha,
 ## eta, annotations, params, variance, logistic = FALSE, lambda = 10,
 ## regularise = FALSE, method = "sLDA", trace = 0L, MaxNWts=3000)
-ntopics <- 20                           # Number of topics to generate
+ntopics <- 50                           # Number of topics to generate
 
 fit <- slda.em(documents = docs_nonzero,
                K = ntopics,
