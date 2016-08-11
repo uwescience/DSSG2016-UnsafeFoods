@@ -3,4 +3,52 @@ layout: page
 title: Data gathering
 ---
 
-Add info on data sources, challenges, process of joining data.
+For this project, we used
+[Amazon reviews](http://jmcauley.ucsd.edu/data/amazon/links.html) of Grocery and
+Gourmet Food products and
+[enforcement reports](http://www.fda.gov/Safety/Recalls/EnforcementReports/default.htm)
+from the Food and Drug Administration. These enforcement reports are made
+available as weekly CSV files going back to 2012. It is possible to search the
+FDA's website for all data on food products, but unfortunately the download is
+limited to 1,000 rows at a time. We also attempted to access the data in a
+public S3 bucket, but found a large portion of the data was missing, so we
+ultimately chose to manually download the weekly CSV files and combine them
+ourselves.
+
+As our goal was to predict food recalls based on product reviews, our next step
+after acquiring the data was to unite these two datasets.
+
+The most reliable way to match recalled products with Amazon reviews was by
+using the item's Universal Product Code (UPC), which is the number that appears
+on a barcode and uniquely identifies that particular product. The FDA
+enforcement reports often (but not always) contained the UPC or UPCs of the
+product(s) being recalled within a larger text field. We used regular
+expressions to extract these codes and, in some cases where partial UPCs were
+provided, generated lists of the possible complete UPCs from the partial codes.
+
+Amazon uses its own identifier, the Amazon Standard Identification Number
+(ASIN), to identify products. Fortunately, conversion tools such as
+[UPCtoASIN.com](http://upctoasin.com) exist to convert UPCs to ASINs. Once we
+matched the UPCs of recalled products with their corresponding ASINs, we were
+able to start exploring the differences in reviews for recalled and non-recalled
+products.
+
+[![Number of reviews for recalled vs. non-recalled products](https://github.com/uwescience/DSSG2016-UnsafeFoods/raw/master/figs/total-review-n-1.png)](https://github.com/uwescience/DSSG2016-UnsafeFoods/blob/master/notebooks/review_summary_vis.md#review-counts-of-recalled-vs-non-recalled-products)
+
+Not surprisingly, there are vastly more reviews for products that have not been
+recalled than there are for products that have been recalled, since most food
+products never get recalled. Over 1,000,000 reviews were for non-recalled
+products, and just over 5,000 were for recalled products. Reviews for recalled
+products made up less than one half of one percent of the total dataset.
+
+The number of reviews for both recalled and non-recalled products has increased
+over time, likely tracking Amazon's popularity as a website and/or the number of
+food products they carry.
+
+[![Number of reviews over time](https://github.com/uwescience/DSSG2016-UnsafeFoods/raw/master/figs/monthly-counts-1.png)](https://github.com/uwescience/DSSG2016-UnsafeFoods/blob/master/notebooks/review_summary_vis.md#reviews-per-month-of-recalled-vs-non-recalled-products)
+
+The Amazon review data also includes the rating (1-5 stars) that the reviewer
+gave the product. For both recalled and non-recalled products, five-star reviews
+are by far the most common.
+
+[![Rating distribution for recalled and non-recalled products](https://github.com/uwescience/DSSG2016-UnsafeFoods/raw/master/figs/rating-distributions-1.png)](https://github.com/uwescience/DSSG2016-UnsafeFoods/blob/master/notebooks/review_summary_vis.md#rating-distribution-for-recalled-and-non-recalled-products)
