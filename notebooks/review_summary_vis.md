@@ -193,15 +193,16 @@ top_asins_ratings  <- amz_clean %>%
          overall = as.character(overall)) %>%
   group_by(year, quarter, asin, overall) %>%
   tally() %>%
-  mutate(newdate = paste(year, quarter, sep = "-"))
+  mutate(newdate = paste(year, quarter, sep = "-")) %>%
+  left_join(recalled, by = "asin")
 ```
 
 Visualize quarterly rating distribution for the 9 most reviewed recalled products.
 
 ``` r
 ggplot(top_asins_ratings, aes(x = newdate, y = n, fill = overall)) +
-  geom_bar(position = "fill", stat = "identity") + 
-  facet_wrap(~ asin) +
+  geom_bar(position = "fill", stat = "identity") +
+  facet_wrap(~ asin, scales = "free_x") +
   scale_fill_viridis(discrete = TRUE) +
   theme(axis.text.x = element_text(size = 6, angle = 90, margin = margin(t = -12)),
         axis.text.y = element_text(size = 7, margin = margin(r = -12)),
@@ -212,34 +213,3 @@ ggplot(top_asins_ratings, aes(x = newdate, y = n, fill = overall)) +
 ```
 
 ![](../figs/quarterly-rating-dist-recalled-1.png)
-
-Visualize monthly rating distribution for all recalled products with recall date overlaid.
-
-``` r
-## Join recalled ASINs + dates with reviews data
-joined_asin_recall <- amz_clean %>%
-  filter(recall == "Recalled") %>%
-  mutate(month = month(date)) %>%
-  group_by(asin, year, month, overall) %>%
-  tally() %>%
-  mutate(newdate = as.Date(paste(year, month, "01", sep = "-"))) %>%
-  left_join(recalled, by = "asin") %>%
-  mutate(overall = as.character(overall))
-
-## Stacked bar chart with recall date overlaid
-ggplot(joined_asin_recall, aes(x = newdate, y = n, fill = overall)) +
-  geom_bar(position = "fill", stat = "identity") +
-  geom_vline(aes(xintercept = as.numeric(initiation_date)),
-             linetype = 4, color = "red") +
-  facet_wrap(~ asin, scales = "free_x", ncol = 3) +
-  scale_fill_viridis(discrete = TRUE) +
-  theme(axis.text.x = element_text(size = 6, angle = 90, margin = margin(t = -12)),
-        axis.text.y = element_text(size = 7, margin = margin(r = -12)),
-        strip.text = element_text(size = 10),
-        legend.position = "bottom") +
-  labs(x = "Quarter",
-       y = "",
-       fill = "Rating")
-```
-
-![](../figs/monthly-rating-dist-with-recall-1.png)
