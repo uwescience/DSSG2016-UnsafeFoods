@@ -3,7 +3,7 @@
 ##########################
 
 ## Packages
-package_reqs <- c("jsonlite", "dplyr", "tm", "lda")
+package_reqs <- c("jsonlite", "dplyr", "tm", "lda", "purrr")
 
 ## Install any necessary packages
 for (pkg in package_reqs) {
@@ -49,10 +49,16 @@ training_asins <- c(sample(recalled_asins,
 testing_asins <- unique(amz$asin)[!unique(amz$asin) %in% training_asins]
 
 ## Subset data to create training set (and remove any empty reviews)
-training <- filter(amz, asin %in% training_asins & reviewText != "") %>%
-  sample_n(10000) %>%
-  arrange(recalled)
+nested_training <- filter(amz, asin %in% training_asins & reviewText != "") %>%
+  group_by(recalled) %>%
+  nest() %>%
+  mutate(n = c(12000, 3000))            # 12k non-recalled, 3k recalled
 
+training <- nested_training %>%
+  mutate(subsamp = map2(data, n, sample_n)) %>%
+  select(recalled, subsamp) %>%
+  unnest()
+  
 ## Vector of Amazon review text
 training_reviews <- training$reviewText
 
