@@ -22,18 +22,17 @@ Then, load the Amazon review data and list of recalled UPCs/ASINs.
 
 ``` r
 ## Load Amazon review data
-json_file <- "../data/processed/reviews_Grocery_and_Gourmet_Food_strict.json"
-amz <- fromJSON(sprintf("[%s]", paste(readLines(json_file), collapse=",")))
+json_file <- "../data/raw/reviews_Grocery_and_Gourmet_Food.json"
+amz <- stream_in(file(json_file))
 
-## Load list of recalled UPCs/ASINs
-recalled <- read.csv("../data/processed/recalls_upcs_asins_joined.csv",
+## Load list of recalled products
+recalled <- read.csv("../github_data/asin_intersection_full.csv",
                      stringsAsFactors = FALSE)
 
-## Vector of ASINs from recalled products
-recalled_asins <- unique(recalled$asins) %>%
-  sapply(strsplit, ";") %>%
-  unname() %>%
-  unlist()
+recalled <- mutate(recalled, initiation_date = as.Date(initiation_date))
+
+## Extract vector of ASINs of recalled products
+recalled_asins <- unique(recalled$asin)
 
 ## Add column to indicate whether product was recalled. Also create a proper
 ## date column in YYYY-MM-DD, and a year column.
@@ -58,7 +57,7 @@ mytheme <- theme_update(
 Review counts of recalled vs. non-recalled products
 ---------------------------------------------------
 
-There are a total of 1638 reviews for recalled food products and 1295518 reviews for non-recalled food products.
+There are a total of 5149 reviews for recalled food products and 1292007 reviews for non-recalled food products.
 
 ``` r
 ggplot(amz_clean, aes(x = recall, fill = recall)) +
@@ -217,30 +216,21 @@ ggplot(top_asins_ratings, aes(x = newdate, y = n, fill = overall)) +
 Visualize monthly rating distribution for all recalled products with recall date overlaid.
 
 ``` r
-## Data frame of recall date and ASIN
-recall_dates <- recalled %>%
-  filter(asins != "") %>%
-  select(DATE, asins) %>%
-  separate(asins, into = 1:120, sep = ";", fill = "right") %>%
-  gather(col, asin, -DATE) %>%
-  filter(!is.na(asin)) %>%
-  mutate(recall_date = as.Date(DATE, format = "%a, %d %b %Y %T")) %>%
-  select(-DATE, -col)
-
-## Join with reviews data
+## Join recalled ASINs + dates with reviews data
 joined_asin_recall <- amz_clean %>%
   filter(recall == "Recalled") %>%
   mutate(month = month(date)) %>%
   group_by(asin, year, month, overall) %>%
   tally() %>%
   mutate(newdate = as.Date(paste(year, month, "01", sep = "-"))) %>%
-  left_join(recall_dates, by = "asin") %>%
+  left_join(recalled, by = "asin") %>%
   mutate(overall = as.character(overall))
 
 ## Stacked bar chart with recall date overlaid
 ggplot(joined_asin_recall, aes(x = newdate, y = n, fill = overall)) +
   geom_bar(position = "fill", stat = "identity") +
-  geom_vline(aes(xintercept = as.numeric(recall_date)), linetype = 4, color = "red") +
+  geom_vline(aes(xintercept = as.numeric(initiation_date)),
+             linetype = 4, color = "red") +
   facet_wrap(~ asin, scales = "free_x", ncol = 3) +
   scale_fill_viridis(discrete = TRUE) +
   theme(axis.text.x = element_text(size = 6, angle = 90, margin = margin(t = -12)),
