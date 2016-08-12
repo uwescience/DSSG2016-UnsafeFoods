@@ -26,20 +26,19 @@ library("viridis")
 
 Then, load the Amazon review data and list of recalled UPCs/ASINs.
 
-```{r data, cache=TRUE}
+```{r data, cache = TRUE, message = FALSE, results = "hide"}
 ## Load Amazon review data
-json_file <- "../data/processed/reviews_Grocery_and_Gourmet_Food_strict.json"
-amz <- fromJSON(sprintf("[%s]", paste(readLines(json_file), collapse=",")))
+json_file <- "../data/raw/reviews_Grocery_and_Gourmet_Food.json"
+amz <- stream_in(file(json_file))
 
-## Load list of recalled UPCs/ASINs
-recalled <- read.csv("../data/processed/recalls_upcs_asins_joined.csv",
+## Load list of recalled products
+recalled <- read.csv("../github_data/asin_intersection_full.csv",
                      stringsAsFactors = FALSE)
 
-## Vector of ASINs from recalled products
-recalled_asins <- unique(recalled$asins) %>%
-  sapply(strsplit, ";") %>%
-  unname() %>%
-  unlist()
+recalled <- mutate(recalled, initiation_date = as.Date(initiation_date))
+
+## Extract vector of ASINs of recalled products
+recalled_asins <- unique(recalled$asin)
 
 ## Add column to indicate whether product was recalled. Also create a proper
 ## date column in YYYY-MM-DD, and a year column.
@@ -200,59 +199,22 @@ top_asins_ratings  <- amz_clean %>%
          overall = as.character(overall)) %>%
   group_by(year, quarter, asin, overall) %>%
   tally() %>%
-  mutate(newdate = paste(year, quarter, sep = "-"))
+  mutate(newdate = paste(year, quarter, sep = "-")) %>%
+  left_join(recalled, by = "asin")
 ```
 
-Visualize quarterly rating distribution for the 9 most reviewed recalled products.
+Visualize quarterly rating distribution for the `r length(top_asins)` most reviewed recalled products.
 
 ```{r quarterly-rating-dist-recalled}
 ggplot(top_asins_ratings, aes(x = newdate, y = n, fill = overall)) +
-  geom_bar(position = "fill", stat = "identity") + 
-  facet_wrap(~ asin) +
-  scale_fill_viridis(discrete = TRUE) +
-  theme(axis.text.x = element_text(size = 6, angle = 90, margin = margin(t = -12)),
-        axis.text.y = element_text(size = 7, margin = margin(r = -12)),
-        legend.position = "bottom") +
-  labs(x = "Quarter",
-       y = "",
-       fill = "Rating")
-```
-
-Visualize monthly rating distribution for all recalled products with recall date overlaid.
-
-
-```{r monthly-rating-dist-with-recall, fig.width = 8, fig.height = 32}
-## Data frame of recall date and ASIN
-recall_dates <- recalled %>%
-  filter(asins != "") %>%
-  select(DATE, asins) %>%
-  separate(asins, into = 1:120, sep = ";", fill = "right") %>%
-  gather(col, asin, -DATE) %>%
-  filter(!is.na(asin)) %>%
-  mutate(recall_date = as.Date(DATE, format = "%a, %d %b %Y %T")) %>%
-  select(-DATE, -col)
-
-## Join with reviews data
-joined_asin_recall <- amz_clean %>%
-  filter(recall == "Recalled") %>%
-  mutate(month = month(date)) %>%
-  group_by(asin, year, month, overall) %>%
-  tally() %>%
-  mutate(newdate = as.Date(paste(year, month, "01", sep = "-"))) %>%
-  left_join(recall_dates, by = "asin") %>%
-  mutate(overall = as.character(overall))
-
-## Stacked bar chart with recall date overlaid
-ggplot(joined_asin_recall, aes(x = newdate, y = n, fill = overall)) +
   geom_bar(position = "fill", stat = "identity") +
-  geom_vline(aes(xintercept = as.numeric(recall_date)), linetype = 4, color = "red") +
-  facet_wrap(~ asin, scales = "free_x", ncol = 3) +
+  facet_wrap(~ asin, scales = "free_x") +
   scale_fill_viridis(discrete = TRUE) +
   theme(axis.text.x = element_text(size = 6, angle = 90, margin = margin(t = -12)),
         axis.text.y = element_text(size = 7, margin = margin(r = -12)),
-        strip.text = element_text(size = 10),
         legend.position = "bottom") +
   labs(x = "Quarter",
        y = "",
        fill = "Rating")
 ```
+
