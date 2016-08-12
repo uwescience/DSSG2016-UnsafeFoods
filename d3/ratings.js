@@ -171,7 +171,23 @@ d3.csv("../data/processed/recalled_amz_reviews.csv", function(error, data) {
             .attr("y2", y(5))
             .attr("stroke", "purple")
             .attr("stroke-linecap", "round")
-            .attr("stroke-width", "5");
+            .attr("stroke-width", "5")
+            .on("mouseover", function(d) {
+                tooltip.transition()
+                    .duration(in_dur)
+                    .style("opacity", .9);
+                tooltip.html(d.recalldate)
+                    .style("left", (d3.event.pageX + 14)
+                           + "px")
+                    .style("top", (d3.event.pageY - 28)
+                           + "px");
+
+            })
+            .on("mouseout", function(d) {
+                tooltip.transition()
+                    .duration(out_dur)
+                    .style("opacity", 0);
+            });
         
         // Move vertical line to recall date
         recallLine.transition()
