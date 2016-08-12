@@ -23,10 +23,10 @@ d3.csv("../data/processed/asins_with_product_titles.csv", function(error, data) 
 });
 
 // Set width/height/margins for vis
-var margin = {top: 50, right: 190, bottom: 50, left: 50};
-var w = 1000 - margin.left - margin.right;
+var margin = {top: 100, right: 120, bottom: 50, left: 120};
+var w = 900 - margin.left - margin.right;
 var h = 480 - margin.top - margin.bottom;
-var radius = 6;
+var radius = 5;
 var padding = 1;
 
 // x and y scales 
