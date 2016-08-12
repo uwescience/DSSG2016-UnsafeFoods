@@ -4,7 +4,8 @@ d3.csv("../data/processed/asins_with_product_titles.csv", function(error, data) 
             .attr("align", "center")
             .append("select")
             .attr("id", "opts")
-            .attr("class", "js-example-basic-single");
+            .attr("class", "js-example-basic-single")
+            .style("width", "600px");
 
     // Start dropdown with ASIN "B001DGYKG0" selected
     select.selectAll("option")
