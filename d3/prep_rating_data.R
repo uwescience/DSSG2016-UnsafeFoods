@@ -12,12 +12,12 @@ recalled <- read.csv("../github_data/asin_intersection_full.csv",
 
 ## Keep only recalled products
 amz_recall <- filter(amz, asin %in% recalled$asin) %>%
-  select(-reviewerID, -reviewerName, -helpful) %>%
+  select(-reviewerID, -reviewerName, -helpful, -reviewTime) %>%
   ## Merge in initiation date
   merge(recalled[, c("asin", "initiation_date")], by = "asin")
 
 ## Export CSV
-write.csv(amz_recall, "../data/processed/recalled_amz_reviews.csv",
+write.csv(amz_recall, "../github_data/recalled_amz_reviews.csv",
           row.names = FALSE)
 
 ## Load metadata
@@ -30,5 +30,5 @@ asins_titles <- metadata %>%
   select(asin, title)
 
 ## Export CSV
-write.csv(asins_titles, "../data/processed/asins_with_product_titles.csv",
+write.csv(asins_titles, "../github_data/recalled_asins_with_product_titles.csv",
           row.names = FALSE)
