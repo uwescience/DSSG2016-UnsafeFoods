@@ -12,7 +12,7 @@ package_reqs <- c("RPostgreSQL", "ggplot2",
                   "wordcloud","tm",
                   "igraph", "GGally",
                   "networkD3","shiny", "SnowballC",
-                  "dplyr","gridExtra")
+                  "dplyr","gridExtra","scales")
 
 ## Install any necessary packages
 for (pkg in package_reqs) {
@@ -33,6 +33,18 @@ library(shiny)
 library(dplyr)
 library(grid)
 library(gridExtra)
+library(scales)
+
+#blank theme for ggplots
+blank_theme <- theme_minimal()+
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.border = element_blank(),
+    panel.grid=element_blank(),
+    axis.ticks = element_blank(),
+    plot.title=element_text(size=14, face="bold")
+  )
 
 # create a connection
 # save the password that we can "hide" it as best as we can by collapsing it
@@ -57,7 +69,7 @@ product_names <- as.vector(dbGetQuery(con, "SELECT distinct product_name from pr
 
 
 # Define UI for application that draws a histogram
-ui <- shinyUI(fluidPage(
+ui <- shinyUI(fluidPage(theme="bootstrap.css",
    
    # Application title
    titlePanel("Amazon Reviews and FDA Recalls- Summary Statistics"),
@@ -75,12 +87,24 @@ ui <- shinyUI(fluidPage(
            condition = "input.selectVis == 'wc'",
            selectInput("wc_data", "Product Name",
                        product_names)
+         ),
+         conditionalPanel(
+           condition = "input.selectVis == 'rt'",
+           uiOutput("classType")
          )
       ),
       
       # Show a plot of the generated distribution
       mainPanel(
-         plotOutput("selectedPlot")
+         plotOutput("selectedPlot"),
+         conditionalPanel(
+           condition = "input.selectVis == 'rt'",
+           plotOutput("secondPie")
+         ),
+         conditionalPanel(
+           condition = "input.selectVis == 'tl'",
+           plotOutput("secondTimeline")
+         )
       )#,
       
    )
@@ -202,54 +226,105 @@ server <- shinyServer(function(input, output) {
        #subset graph to only have categories within a distance of 3
        #from the grocery and gourmet foods node
        hclust_category <- cluster_fast_greedy(category_graph)
-       igraph::plot_dendrogram(hclust_category)
            
      }
      
      else if (input$selectVis == "rt") {
        
        #fetch classification and review data
-       class_data <- dbGetQuery(con, "select rv.review_text, rv.product_id, e.classification
+       class_data <- dbGetQuery(con, "select rv.review_text, e.classification
                                 from review rv join recalledproduct rp
                                 on rv.product_id = rp.product_id
                                 join recall rc on rc.recall_id = rp.recall_id
                                 join event e on rc.event_id = e.event_id;")
        
-       #get summary by product
-       class_by_product <- class_data %>% group_by(product_id,classification) %>% summarize(n=n())
+       #get summary by review
+       class_by_review <- class_data %>% group_by(classification) %>% summarize(n=n())
+       class_by_review$percent <- sapply(class_by_review$n, function(x) {
+         return(x * 100 / sum(class_by_review$n))
+       })
        
-       #graph summary by product and by number of reviews
-       p1 <- ggplot(class_data, aes(x = factor(1), fill = factor(classification))) +
-         geom_bar(width = 1) + coord_polar(theta = "y") +
-         guides(fill=guide_legend(title="Classification")) +
-         scale_fill_manual(values=c("#607D8B","#FFB300","#4CAF50")) +
-         ggtitle("Reviews per Classification Type") +
-         xlab("") + ylab("") +
-         theme(plot.title=element_text(face="bold", size=16),
-               legend.title=element_text(size=10),
-               panel.border = element_blank(),
-               panel.grid=element_blank(),
-               axis.ticks = element_blank())
+       #graph summary by review
+       ggplot(class_by_review, aes(x = factor(1),y=n, fill = factor(classification)))+
+         geom_bar(width=1, stat="identity") +
+         coord_polar("y", start=0) +blank_theme +
+         theme(axis.text.x=element_blank(),
+               axis.text.y = element_blank(),
+               plot.title=element_text(face="bold", size=18),
+               axis.title=element_text(size=10)) +
+         ggtitle("% Reviews per Recall Class") +
+         geom_text(aes(y = n/3 + c(0, cumsum(n)[-length(n)]), 
+                       label = percent(percent/100)), size=5)+
+         scale_fill_manual(values=c("#cad1c6","#61abaa","#2a7e82"),
+                           name="Class")
          
-         #by product
-      p2 <- ggplot(class_by_product, aes(x = factor(1), fill = factor(classification))) +
-         geom_bar(width = 1) + coord_polar(theta = "y") +
-         guides(fill=guide_legend(title="Classification")) +
-         scale_fill_manual(values=c("#607D8B","#FFB300","#4CAF50")) +
-         ggtitle("Products per Classification Type") +
-         xlab("") + ylab("") +
-         theme(plot.title=element_text(face="bold", size=16),
-               legend.title=element_text(size=10),
-               panel.border = element_blank(),
-               panel.grid=element_blank(),
-               axis.ticks = element_blank())
-       
-       grid.arrange(p1, p2, ncol = 1, 
-                    top = textGrob("Classification Summary", gp=gpar(fontsize=20,font=2)))
-       
      }
      
    })
+   
+   output$secondPie <- renderPlot({
+     
+     #fetch classification and review data
+     class_data <- dbGetQuery(con, "select rv.product_id, e.classification
+                              from review rv join recalledproduct rp
+                              on rv.product_id = rp.product_id
+                              join recall rc on rc.recall_id = rp.recall_id
+                              join event e on rc.event_id = e.event_id;")
+     
+     #get summary by product
+     class_by_product <- class_data %>% group_by(classification) %>% summarize(n=n())
+     class_by_product$percent <- sapply(class_by_product$n, function(x) {
+       return(x * 100 / sum(class_by_product$n))
+     })
+     
+     #by product
+     ggplot(class_by_product, aes(x = factor(1),y=n, fill = factor(classification)))+
+       geom_bar(width=1, stat="identity") +
+       coord_polar("y", start=0) +blank_theme +
+       theme(axis.text.x=element_blank(),
+             axis.text.y = element_blank(),
+             plot.title=element_text(face="bold", size=18),
+             axis.title=element_text(size=10)) +
+       ggtitle("% Products per Recall Class") +
+       geom_text(aes(y = n/3 + c(0, cumsum(n)[-length(n)]), 
+                     label = percent(percent/100)), size=5)+
+       scale_fill_manual(values=c("#cad1c6","#61abaa","#2a7e82"),
+                         name="Class")
+       
+     
+   })
+   
+   output$classType <- renderUI({
+     
+     HTML("<p>From FDA.gov:</p></br><p>
+      Class I recall: a situation in which there is a reasonable probability that the use of or 
+     exposure to a violative product will cause serious adverse health consequences or death.</p>
+      <p>Class II recall: a situation in which use of or exposure to a violative product may cause 
+     temporary or medically reversible adverse health consequences or where the probability of serious adverse health consequences is remote.</p>
+      <p>Class III recall: a situation in which use of or exposure to a violative product is not 
+     likely to cause adverse health consequences.</p>")
+     
+   })
+   
+   #second timeline to drill down on recalled product reviews
+   output$secondTimeline <- renderPlot({
+     
+     
+     review_time_data_recall <- dbGetQuery(con, "SELECT rv.review_time,count(*)
+                                           from review rv 
+                                           where rv.product_id in (
+                                           select product_id from recalledproduct)
+                                           group by rv.review_time;")
+     
+     ggplot() + geom_line(data=review_time_data_recall,aes(x=review_time,y=count),
+                 colour="#1E88E5", size=1)+
+       ggtitle("Recalled Product Reviews Timeline") +
+       xlab("Date") + ylab("Reviews") +
+       theme(plot.title=element_text(face="bold", size=18),
+             axis.title=element_text(size=10))
+     
+   })
+   
 })
 
 # Run the application 
