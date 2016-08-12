@@ -13,7 +13,7 @@ d3.csv("../data/processed/asins_with_product_titles.csv", function(error, data) 
         .enter()
         .append("option")
         .attr("value", function (d) { return d.asin; })
-        .text(function (d) { return d.title; })
+        .text(function (d) { return d.title + " [ASIN: " + d.asin + "]"; })
         .property("selected", function(d){ return d.asin === "B001DGYKG0"; });
 
     // Initialize Select2
@@ -202,6 +202,20 @@ d3.csv("../data/processed/recalled_amz_reviews.csv", function(error, data) {
             });
 
         recallLine.exit().remove();
+
+        var asin = svg.selectAll(".asinlabel")
+                .data([rowZero]);
+
+        asin.enter()
+            .append("text")
+            .attr("class", "asinlabel")
+            .attr("x", 1)
+            .attr("y", -50);
+        
+        asin.transition()
+            .text(function(d) { return "Amazon ID: " + d.asin; });
+
+        asin.exit().remove();
         
         // Begin arranging points
         force.start();
