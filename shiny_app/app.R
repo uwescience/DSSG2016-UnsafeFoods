@@ -8,17 +8,20 @@
 #
 ## Packages
 
-package_reqs <- c("RPostgreSQL", "ggplot2", 
-                  "wordcloud","tm",
-                  "igraph", "networkD3","shiny", "SnowballC",
-                  "dplyr","gridExtra","scales", "plotly")
+#run this commented out code if you don't have all of these
+#installed packages and you want to run it on your local device.
+##########################################################3
+#package_reqs <- c("RPostgreSQL", "ggplot2", 
+#                  "wordcloud","tm",
+#                  "igraph", "networkD3","shiny", "SnowballC",
+#                  "dplyr","gridExtra","scales", "plotly")
 
 ## Install any necessary packages
-for (pkg in package_reqs) {
-  if(!pkg %in% installed.packages()) {
-    install.packages(pkg)
-  }
-}
+#for (pkg in package_reqs) {
+# if(!pkg %in% installed.packages()) {
+#    install.packages(pkg)
+#  }
+#}
 
 library(RPostgreSQL)
 library(igraph)
