@@ -10,9 +10,8 @@
 
 package_reqs <- c("RPostgreSQL", "ggplot2", 
                   "wordcloud","tm",
-                  "igraph", "GGally",
-                  "networkD3","shiny", "SnowballC",
-                  "dplyr","gridExtra","scales")
+                  "igraph", "networkD3","shiny", "SnowballC",
+                  "dplyr","gridExtra","scales", "plotly")
 
 ## Install any necessary packages
 for (pkg in package_reqs) {
@@ -20,7 +19,6 @@ for (pkg in package_reqs) {
     install.packages(pkg)
   }
 }
-
 
 library(RPostgreSQL)
 library(igraph)
@@ -34,6 +32,8 @@ library(dplyr)
 library(grid)
 library(gridExtra)
 library(scales)
+library(networkD3)
+library(plotly)
 
 #blank theme for ggplots
 blank_theme <- theme_minimal()+
@@ -45,6 +45,24 @@ blank_theme <- theme_minimal()+
     axis.ticks = element_blank(),
     plot.title=element_text(size=14, face="bold")
   )
+
+grid_theme <- theme(plot.title=element_text(face="bold",family="AvantGarde",size=18),
+                    axis.title=element_text(size=10,face="bold", family="AvanteGarde"),
+                    panel.background = element_rect(colour="darkgrey",
+                                                    fill="#e0ffe4"),
+                    panel.grid.minor=element_line(colour="darkgrey"),
+                    panel.grid.major=element_line(colour="darkgrey"),
+                    plot.background=element_rect(fill="#e0ffe4", colour="darkgrey"),
+                    legend.background=element_rect(fill="#e0ffe4",colour="darkgrey"),
+                    legend.key = element_rect(colour = "#e0ffe4"),
+                    legend.text=element_text(face="bold"),
+                    legend.title=element_text(face="bold"))
+
+pie_theme <- theme(plot.background=element_rect(fill="#e0ffe4", colour="darkgrey"),
+                    legend.background=element_rect(fill="#e0ffe4",colour="darkgrey"),
+                    legend.key = element_rect(colour = "#e0ffe4"),
+                    legend.text=element_text(face="bold"),
+                    legend.title=element_text(face="bold"))
 
 # create a connection
 # save the password that we can "hide" it as best as we can by collapsing it
@@ -83,42 +101,50 @@ ui <- shinyUI(fluidPage(theme="bootstrap.css",
                               "Word Cloud" = "wc",
                               "Category Summary"="cs",
                               "Recall Type Summary" = "rt")),
-         conditionalPanel(
-           condition = "input.selectVis == 'wc'",
-           selectInput("wc_data", "Product Name",
-                       product_names)
-         ),
-         conditionalPanel(
-           condition = "input.selectVis == 'rt'",
-           uiOutput("classType")
-         )
+         uiOutput("wc_data"),
+         uiOutput("classType")
       ),
       
       # Show a plot of the generated distribution
       mainPanel(
-         plotOutput("selectedPlot"),
-         conditionalPanel(
-           condition = "input.selectVis == 'rt'",
-           plotOutput("secondPie")
-         ),
-         conditionalPanel(
-           condition = "input.selectVis == 'tl'",
-           plotOutput("secondTimeline")
-         )
+        conditionalPanel(
+          condition = "input.selectVis == 'rs'",
+          plotOutput("ratingsPlot")
+        ),
+        conditionalPanel(
+          condition = "input.selectVis == 'rt'",
+          plotOutput("pieChart"),
+          plotOutput("secondPie")
+        ),
+        conditionalPanel(
+          condition = "input.selectVis == 'tl'",
+          plotOutput("timelinePlot"),
+          plotOutput("secondTimeline")
+        ),
+        
+        conditionalPanel(
+          condition = "input.selectVis == 'wc'",
+          plotOutput("wordcloudPlot")
+        ),
+        
+        conditionalPanel(
+          condition = "input.selectVis == 'cs'",
+          uiOutput("allNetworkTitle"),
+          simpleNetworkOutput("allNetwork"),
+          uiOutput("recallNetworkTitle"),
+          simpleNetworkOutput("recallNetwork")
+        )
       )#,
       
    )
 ))
 
-
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output) {
    
-   output$selectedPlot <- renderPlot({
+   output$ratingsPlot <- renderPlot({
      #ratings summary
-     if (input$selectVis == "rs") {
-       
-       #get rating data from db
+      #get rating data from db
        ratings_data <- dbGetQuery(con, "SELECT overall, count(*) as num_reviews from review
                                   where product_id not in (select product_id from recalledproduct)
                                   group by overall;")
@@ -140,44 +166,40 @@ server <- shinyServer(function(input, output) {
        
        #plot the data
        ggplot(merged_data, aes(x=overall,y=prop_reviews,fill=as.factor(recalled))) +
-         geom_bar(stat="identity",position="dodge") +
+         geom_bar(stat="identity",position="dodge",alpha=.85) +
          ggtitle("Reviews per Rating") +
          xlab("Rating") + ylab("Proportion of Reviews") +
-         theme(plot.title=element_text(face="bold", size=18),
-               axis.title=element_text(size=10)) +
+         grid_theme +
          guides(fill=guide_legend(title="Recall Status")) +
-         scale_fill_manual(values=c("#607D8B","#689F38"))
+         scale_fill_manual(values=c("#c9acc2","black"))
        
-     }
      
-     #timeline
-     else if (input$selectVis == "tl") {
-       
+   })
+   
+   output$timelinePlot <- renderPlot({
+     
+     #query time data from all reviews
        review_time_data <- dbGetQuery(con, "SELECT rv.review_time,count(*)
-                                        from review rv group by rv.review_time;")
+                                      from review rv group by rv.review_time;")
        
-       review_time_data_recall <- dbGetQuery(con, "SELECT rv.review_time,count(*)
-                                        from review rv 
-                                        where rv.product_id in (
-                                        select product_id from recalledproduct)
-                                            group by rv.review_time;")
-       
+       #plot the data in time series
        ggplot() + geom_line(data=review_time_data,aes(x=review_time,y=count),
-                            colour="#BF360C",size=1) +
-         geom_line(data=review_time_data_recall,aes(x=review_time,y=count),
-                   colour="#1E88E5", size=1)+
-         ggtitle("Reviews Timeline") +
+                            colour="#BF360C",size=1, alpha=.85) +
+         ggtitle("Timeline for All Reviews") +
          xlab("Date") + ylab("Reviews") +
-         theme(plot.title=element_text(face="bold", size=18),
-               axis.title=element_text(size=10))
-     }
+         grid_theme
+       
+     
+   })
+   
+   output$wordcloudPlot <- renderPlot({
      
      #Word cloud output
-     else if (input$selectVis == "wc") {
+     if (input$selectVis == "wc") {
        
        review_text_data <- dbGetQuery(con, "SELECT rv.review_text,p.product_name
-                                        from review rv join product p
-                                        on rv.product_id = p.product_id
+                                      from review rv join product p
+                                      on rv.product_id = p.product_id
                                       where rv.product_id in
                                       (select product_id from recalledproduct);")
        
@@ -197,131 +219,189 @@ server <- shinyServer(function(input, output) {
        frequencies <- colSums(as.matrix(review.dtm))
        terms <- colnames(review.dtm)
        wordcloud(terms,freq=frequencies, max.words=50,random.order = FALSE, colors = 
-                            brewer.pal(5,"Dark2"))
+                   brewer.pal(5,"Dark2"), min.freq = 1)
        
        
      }
+   })
      
-     #category summary selection
-     else if (input$selectVis == "cs") {
-       
-       #fetch data from db
-       category_data <- dbGetQuery(con, "select c.category_name,
-                                   c2.category_name as parent_name from category c
-                                   join category c2 on c.parent_id = c2.category_id;")
-       
-       category_graph <- graph_from_data_frame(category_data,directed=FALSE) 
-       unique(category_data$category_name)
-       
-       #calculate shortest paths between the center and each top level category
-       category_distances <- shortest_paths(category_graph,from="Grocery & Gourmet Food",to=V(category_graph))
-       names(unlist(category_distances$vpath[1]))[]
-       category_distances$path_length <- sapply(category_distances$vpath,function(x) {length(x)})
-       category_distances$node <- sapply(category_distances$vpath, 
-                                         function(x) {
-         nodes <- names(unlist(x))
-         nodes[length(nodes)]
-       })
-       
-       #subset graph to only have categories within a distance of 3
-       #from the grocery and gourmet foods node
-       hclust_category <- cluster_fast_greedy(category_graph)
-           
-     }
+  output$pieChart <- renderPlot({
+    #recall type pie chart
+    #fetch classification and review data
+      class_data <- dbGetQuery(con, "select rv.review_text, e.classification
+                               from review rv join recalledproduct rp
+                               on rv.product_id = rp.product_id
+                               join recall rc on rc.recall_id = rp.recall_id
+                               join event e on rc.event_id = e.event_id;")
+      
+      #account for unknown classification in press release data
+      class_data$classification[is.na(class_data$classification)] <- 'unknown'
+      
+      #get summary by review
+      class_by_review <- class_data %>% group_by(classification) %>% summarize(n=n())
+      class_by_review$percent <- sapply(class_by_review$n, function(x) {
+        return(x * 100 / sum(class_by_review$n))
+      })
+      
+      #graph summary by review
+      ggplot(class_by_review, aes(x = factor(1),y=n, fill = factor(classification)))+
+        geom_bar(width=1, stat="identity") +
+        coord_polar("y", start=0) +blank_theme +
+        theme(axis.text.x=element_blank(),
+              axis.text.y = element_blank(),
+              plot.title=element_text(face="bold", size=18),
+              axis.title=element_text(size=10)) +
+        pie_theme +
+        ggtitle("% Reviews per Recall Class") +
+        geom_text(aes(y = n/3 + c(0, cumsum(n)[-length(n)]), 
+                      label = percent(percent/100)), size=5)+
+        scale_fill_manual(values=c("#bae4bc","#7bccc4", "#43a2ca","#0868ac"),
+                          name="Class")
+      
+    
+  })
+   
+   output$secondPie <- renderPlot({
      
-     else if (input$selectVis == "rt") {
-       
-       #fetch classification and review data
-       class_data <- dbGetQuery(con, "select rv.review_text, e.classification
+     #fetch classification and review data
+       class_data <- dbGetQuery(con, "select distinct rv.product_id, e.classification
                                 from review rv join recalledproduct rp
                                 on rv.product_id = rp.product_id
                                 join recall rc on rc.recall_id = rp.recall_id
                                 join event e on rc.event_id = e.event_id;")
        
-       #get summary by review
-       class_by_review <- class_data %>% group_by(classification) %>% summarize(n=n())
-       class_by_review$percent <- sapply(class_by_review$n, function(x) {
-         return(x * 100 / sum(class_by_review$n))
+       #account for unknown classification in press release data
+       class_data$classification[is.na(class_data$classification)] <- 'unknown'
+       
+       #get summary by product
+       class_by_product <- class_data %>% group_by(classification) %>% summarize(n=n())
+       class_by_product$percent <- sapply(class_by_product$n, function(x) {
+         return(x * 100 / sum(class_by_product$n))
        })
        
-       #graph summary by review
-       ggplot(class_by_review, aes(x = factor(1),y=n, fill = factor(classification)))+
+       #by product
+       ggplot(class_by_product, aes(x = factor(1),y=n, fill = factor(classification)))+
          geom_bar(width=1, stat="identity") +
          coord_polar("y", start=0) +blank_theme +
          theme(axis.text.x=element_blank(),
                axis.text.y = element_blank(),
                plot.title=element_text(face="bold", size=18),
-               axis.title=element_text(size=10)) +
-         ggtitle("% Reviews per Recall Class") +
+               axis.title=element_text(size=10)
+               ) + pie_theme + 
+         ggtitle("% Products per Recall Class") +
          geom_text(aes(y = n/3 + c(0, cumsum(n)[-length(n)]), 
                        label = percent(percent/100)), size=5)+
-         scale_fill_manual(values=c("#cad1c6","#61abaa","#2a7e82"),
+         scale_fill_manual(values=c("#bae4bc","#7bccc4", "#43a2ca","#0868ac"),
                            name="Class")
-         
-     }
-     
-   })
-   
-   output$secondPie <- renderPlot({
-     
-     #fetch classification and review data
-     class_data <- dbGetQuery(con, "select rv.product_id, e.classification
-                              from review rv join recalledproduct rp
-                              on rv.product_id = rp.product_id
-                              join recall rc on rc.recall_id = rp.recall_id
-                              join event e on rc.event_id = e.event_id;")
-     
-     #get summary by product
-     class_by_product <- class_data %>% group_by(classification) %>% summarize(n=n())
-     class_by_product$percent <- sapply(class_by_product$n, function(x) {
-       return(x * 100 / sum(class_by_product$n))
-     })
-     
-     #by product
-     ggplot(class_by_product, aes(x = factor(1),y=n, fill = factor(classification)))+
-       geom_bar(width=1, stat="identity") +
-       coord_polar("y", start=0) +blank_theme +
-       theme(axis.text.x=element_blank(),
-             axis.text.y = element_blank(),
-             plot.title=element_text(face="bold", size=18),
-             axis.title=element_text(size=10)) +
-       ggtitle("% Products per Recall Class") +
-       geom_text(aes(y = n/3 + c(0, cumsum(n)[-length(n)]), 
-                     label = percent(percent/100)), size=5)+
-       scale_fill_manual(values=c("#cad1c6","#61abaa","#2a7e82"),
-                         name="Class")
        
      
    })
    
    output$classType <- renderUI({
-     
-     HTML("<p>From FDA.gov:</p></br><p>
+     if (input$selectVis == "rt") {
+       HTML("<p>From FDA.gov:</p></br><p>
       Class I recall: a situation in which there is a reasonable probability that the use of or 
-     exposure to a violative product will cause serious adverse health consequences or death.</p>
-      <p>Class II recall: a situation in which use of or exposure to a violative product may cause 
-     temporary or medically reversible adverse health consequences or where the probability of serious adverse health consequences is remote.</p>
-      <p>Class III recall: a situation in which use of or exposure to a violative product is not 
-     likely to cause adverse health consequences.</p>")
+            exposure to a violative product will cause serious adverse health consequences or death.</p>
+            <p>Class II recall: a situation in which use of or exposure to a violative product may cause 
+            temporary or medically reversible adverse health consequences or where the probability of serious adverse health consequences is remote.</p>
+            <p>Class III recall: a situation in which use of or exposure to a violative product is not 
+            likely to cause adverse health consequences.</p>
+            </br>
+            \'Unknown\' classification refers to recall data coming from firm press releases
+            rather than FDA enforcement data. This data set was less complete in terms of their
+            corresponding enforcements.")
+     }
      
    })
    
    #second timeline to drill down on recalled product reviews
    output$secondTimeline <- renderPlot({
      
+     #query data for recalled product reviews
+       review_time_data_recall <- dbGetQuery(con, "SELECT rv.review_time,count(*)
+                                             from review rv 
+                                             where rv.product_id in (
+                                             select product_id from recalledproduct)
+                                             group by rv.review_time;")
+       
+       #plot time series
+       ggplot() + geom_line(data=review_time_data_recall,aes(x=review_time,y=count),
+                            colour="#1E88E5", size=1)+
+         ggtitle("Timeline for Recalled Product Reviews") +
+         xlab("Date") + ylab("Reviews") +
+         grid_theme
+       
      
-     review_time_data_recall <- dbGetQuery(con, "SELECT rv.review_time,count(*)
-                                           from review rv 
-                                           where rv.product_id in (
-                                           select product_id from recalledproduct)
-                                           group by rv.review_time;")
+   })
+   
+   output$recallNetworkTitle <- renderUI({
      
-     ggplot() + geom_line(data=review_time_data_recall,aes(x=review_time,y=count),
-                 colour="#1E88E5", size=1)+
-       ggtitle("Recalled Product Reviews Timeline") +
-       xlab("Date") + ylab("Reviews") +
-       theme(plot.title=element_text(face="bold", size=18),
-             axis.title=element_text(size=10))
+     h3("Top 30 Categories for Number of Recalled Reviews")
+     
+   })
+   
+   output$recallNetwork <- renderSimpleNetwork({
+     
+     #fetch data from db
+       category_data <- dbGetQuery(con, "select c.category_name,
+                                   c2.category_name as parent_name from category c
+                                   join category c2 on c.parent_id = c2.category_id;")
+       
+       #fetch top categories by assignment from db
+       top_categories <- dbGetQuery(con, "select count(*), c.category_name
+                                    from categoryassignment ca join
+                                    category c on ca.category_id = c.category_id
+                                    where ca.product_id in (select product_id from recalledproduct)
+                                    group by c.category_name
+                                    order by count(*) desc limit 30;")
+       
+       #subset category data to just the top 30
+       category_data_sub <- subset(category_data, category_data$category_name %in%
+                                     top_categories$category_name)
+       
+       #plot data with network D3
+       simpleNetwork(category_data_sub,fontSize = 14,
+                     nodeColour = "#bae4b3",textColour = "#b3cde3")
+     
+   })
+   
+   output$allNetworkTitle <- renderUI({
+     
+     h3("Top 30 Categories for Number of Reviews")
+     
+   })
+   
+   output$allNetwork <- renderSimpleNetwork({
+     
+     #fetch data from db
+       category_data <- dbGetQuery(con, "select c.category_name,
+                                   c2.category_name as parent_name from category c
+                                   join category c2 on c.parent_id = c2.category_id;")
+       
+       #fetch top categories by assignment from db
+       top_categories <- dbGetQuery(con, "select count(*), c.category_name
+                                    from categoryassignment ca join
+                                    category c on ca.category_id = c.category_id
+                                    group by c.category_name
+                                    order by count(*) desc limit 30;")
+       
+       #subset category data to just the top 30
+       category_data_sub <- subset(category_data, category_data$category_name %in%
+                                     top_categories$category_name)
+       
+       #plot d3 graph
+       simpleNetwork(category_data_sub,fontSize = 14,
+                     nodeColour = "#bae4b3",textColour = "#b3cde3")
+     
+   })
+   
+   #conditional input pane for word cloud option
+   output$wc_data <- renderUI({
+     
+     if (input$selectVis == "wc") {
+       selectInput("wc_data", "Product Name",
+                   product_names)
+     }
      
    })
    
