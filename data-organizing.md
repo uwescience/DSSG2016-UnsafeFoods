@@ -14,7 +14,7 @@ Some visualizations based on summary statistics queried from the database can be
 
 ## Understanding the Database
 
-![alt text](assets/images/UnsafeFoodsDatabase.png "Unsafe Foods DB Schema")
+![alt text](https://github.com/cvint13/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/UnsafeFoodsDatabase.png?raw=true "Unsafe Foods DB Schema")
 
 The Unsafe Foods Database is a relational Postgres database that facilitates the querying and analysis of Amazon review data with respect to historical FDA recall data. We gathered the Amazon Review data from a [historical dataset](http://jmcauley.ucsd.edu/data/amazon/) that was published by Julian McAuley at UCSD. This data contains approximately 1.8 million individual reviews that include the reviewer ID, date and time of the review, the text, summary, rating, and product metadata.  
 
