@@ -16,7 +16,7 @@ Some visualizations based on summary statistics queried from the database can be
 
 ![alt text](https://github.com/cvint13/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/UnsafeFoodsDatabase.png?raw=true "Unsafe Foods DB Schema")
 
-The Unsafe Foods Database is a relational Postgres database that facilitates the querying and analysis of Amazon review data with respect to historical FDA recall data. We gathered the Amazon Review data from a [historical dataset](http://jmcauley.ucsd.edu/data/amazon/) that was published by Julian McAuley at UCSD. This data contains approximately 1.8 million individual reviews that include the reviewer ID, date and time of the review, the text, summary, rating, and product metadata.  
+The Unsafe Foods Database is a relational Postgres database that facilitates the querying and analysis of Amazon review data with respect to historical FDA recall data. We gathered the Amazon Review data from a [historical dataset](http://jmcauley.ucsd.edu/data/amazon/) that was published by Julian McAuley at UCSD. This data contains approximately 1.3 million individual reviews that include the reviewer ID, date and time of the review, the text, summary, rating, and product metadata.  
 
 ## Connecting to the Database in Python
 
@@ -477,7 +477,8 @@ category_breakdown_recalls
 
 
 
-All of our products are in the Grocery and Gourmet Food category, but it looks like Canned Dry & Packaged Foods might be the biggest headache for Amazon.</br>
+All of our products are in the Grocery and Gourmet Food category, but it looks like Canned Dry & Packaged Foods might be the biggest headache for Amazon.
+
 What about brands? What is the range of number of recalls that a single brand endured within the time frame of our recall data set?
 
 
