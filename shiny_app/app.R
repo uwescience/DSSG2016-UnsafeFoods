@@ -364,7 +364,7 @@ server <- shinyServer(function(input, output) {
        
        #plot data with network D3
        simpleNetwork(category_data_sub,fontSize = 14,
-                     nodeColour = "#bae4b3",textColour = "#b3cde3")
+                     nodeColour = "#bae4b3",textColour = "#dafbeb")
      
    })
    
@@ -394,7 +394,7 @@ server <- shinyServer(function(input, output) {
        
        #plot d3 graph
        simpleNetwork(category_data_sub,fontSize = 14,
-                     nodeColour = "#bae4b3",textColour = "#b3cde3")
+                     nodeColour = "#bae4b3",textColour = "#dafbeb")
      
    })
    
