@@ -183,76 +183,6 @@ category_breakdown
       <td>411</td>
     </tr>
     <tr>
-      <th>16</th>
-      <td>Vinegars</td>
-      <td>396</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>Oils</td>
-      <td>396</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>Single Herbs &amp; Spices</td>
-      <td>394</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>Fruit</td>
-      <td>370</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>Bars</td>
-      <td>343</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>Baby Formula</td>
-      <td>324</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>Sauces</td>
-      <td>298</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>Energy Drinks</td>
-      <td>272</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>Sugar Substitutes</td>
-      <td>254</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>Juices</td>
-      <td>251</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>Cereals</td>
-      <td>239</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>Sugars</td>
-      <td>234</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>Chewing Gum</td>
-      <td>229</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>Fruit Juice</td>
-      <td>227</td>
-    </tr>
-    <tr>
       <th>...</th>
       <td>...</td>
       <td>...</td>
@@ -355,96 +285,6 @@ category_breakdown_reviews
       <th>11</th>
       <td>Herbal</td>
       <td>3609</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>Single Herbs &amp; Spices</td>
-      <td>3582</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>Baby Formula</td>
-      <td>3553</td>
-    </tr>
-    <tr>
-      <th>14</th>
-      <td>Nut</td>
-      <td>3284</td>
-    </tr>
-    <tr>
-      <th>15</th>
-      <td>Coconut</td>
-      <td>3276</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>Snack Foods</td>
-      <td>3224</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>Sugars</td>
-      <td>2943</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>Sugar Substitutes</td>
-      <td>2848</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>Tea Samplers</td>
-      <td>2303</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>Meal Replacement Drinks</td>
-      <td>2244</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>Cereal</td>
-      <td>2013</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>Breakfast Foods</td>
-      <td>2009</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>Single-Serve Cups</td>
-      <td>1854</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>Green</td>
-      <td>1808</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>Chewing Gum</td>
-      <td>1721</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>Fruit</td>
-      <td>1650</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>Bars</td>
-      <td>1630</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>Nuts</td>
-      <td>1604</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>Nuts &amp; Seeds</td>
-      <td>1555</td>
     </tr>
     <tr>
       <th>...</th>
@@ -627,44 +467,9 @@ category_breakdown_recalls
       <td>1</td>
     </tr>
     <tr>
-      <th>27</th>
-      <td>Trail Mix</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>Beverages</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>Hot Cocoa</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>30</th>
-      <td>Breadcrumbs &amp; Seasoned Coatings</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>31</th>
-      <td>Beef Soups</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>32</th>
-      <td>Canned &amp; Jarred Food</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>33</th>
-      <td>Ranch</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>34</th>
-      <td>Breadcrumbs</td>
-      <td>1</td>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
     </tr>
   </tbody>
 </table>
@@ -781,81 +586,6 @@ brand_breakdown
       <td>2</td>
     </tr>
     <tr>
-      <th>15</th>
-      <td>845</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>16</th>
-      <td>7927</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>17</th>
-      <td>7497</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>8337</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>19</th>
-      <td>3127</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>20</th>
-      <td>985</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>21</th>
-      <td>91</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>22</th>
-      <td>8366</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>23</th>
-      <td>8344</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>24</th>
-      <td>2683</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>25</th>
-      <td>2100</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>26</th>
-      <td>7326</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>27</th>
-      <td>6086</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>28</th>
-      <td>230</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>29</th>
-      <td>1410</td>
-      <td>1</td>
-    </tr>
-    <tr>
       <th>...</th>
       <td>...</td>
       <td>...</td>
@@ -874,4 +604,4 @@ Don't forget to close your connection!
 conn.close()
 ```
 
-This tutorial can be found in Jupyter Notebook form [here]({{site.url}}/notebooks/using-unsafefoods-db.ipynb).
+This tutorial can be found in Jupyter Notebook form [here](https://github.com/uwescience/DSSG2016-UnsafeFoods/blob/master/notebooks/using-unsafefoods-db.ipynb).
