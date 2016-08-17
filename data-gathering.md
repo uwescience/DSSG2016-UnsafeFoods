@@ -52,3 +52,45 @@ gave the product. For both recalled and non-recalled products, five-star reviews
 are by far the most common.
 
 [![Rating distribution for recalled and non-recalled products](https://github.com/uwescience/DSSG2016-UnsafeFoods/raw/master/figs/rating-distributions-1.png)](https://github.com/uwescience/DSSG2016-UnsafeFoods/blob/master/notebooks/review_summary_vis.md#rating-distribution-for-recalled-and-non-recalled-products)
+
+## Explore the Reviews
+
+We created an exploratory tool for viewing reviews of recalled products. The
+plot below shows reviews and ratings for a recalled product over time, as well
+as the date the product was recalled. Hover over the points to view the text of
+the review. You can view different products using the dropdown menu below the
+plot.
+
+<!-- Load D3 -->
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/d3-time.v1.min.js"></script>
+<script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+
+<!-- Load JQuery -->
+<script
+src="http://code.jquery.com/jquery-3.1.0.min.js"
+integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+crossorigin="anonymous">
+</script>
+
+<!-- Use Select2 for dropdown menu -->
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"
+rel="stylesheet" />
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js">
+</script>
+
+<!-- CSS for plot -->
+<link href="https://rawgit.com/uwescience/DSSG2016-UnsafeFoods/master/d3/style.css" type="text/css" rel="stylesheet" />
+
+<div id="vis"></div>
+
+<!-- Dropdown -->
+<p class="dropdown-label">Select product:</p>
+<div id="dropdown"></div>
+
+<!-- Visualization code -->
+<script src="https://rawgit.com/uwescience/DSSG2016-UnsafeFoods/master/d3/ratings.js"></script>
+
+<div id="review-vis"></div>
