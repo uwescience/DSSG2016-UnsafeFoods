@@ -142,7 +142,8 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
                     .style("left", (d3.event.pageX + 14)
                            + "px")
                     .style("top", (d3.event.pageY - 28)
-                           + "px");
+                           + "px")
+                    .style("font-size", "12px");
 
             })
             .on("mouseout", function(d) {
