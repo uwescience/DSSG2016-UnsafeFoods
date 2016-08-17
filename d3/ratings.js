@@ -5,7 +5,7 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
             .append("select")
             .attr("id", "opts")
             .attr("class", "js-example-basic-single")
-            .style("width", "600px");
+            .style("width", "400px");
 
     // Start dropdown with ASIN "B001DGYKG0" selected
     select.selectAll("option")
@@ -25,8 +25,8 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
 
 // Set width/height/margins for vis
 var margin = {top: 100, right: 20, bottom: 50, left: 20};
-var w = 800 - margin.left - margin.right;
-var h = 480 - margin.top - margin.bottom;
+var w = 600 - margin.left - margin.right;
+var h = 400 - margin.top - margin.bottom;
 var radius = 5;
 var padding = 1;
 
