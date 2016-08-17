@@ -1,11 +1,11 @@
 // Load ASINs and product titles into the select dropdown
-d3.csv("../github_data/recalled_asins_with_product_titles.csv", function(error, data) {
+d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master/github_data/recalled_asins_with_product_titles.csv", function(error, data) {
     var select = d3.select("#dropdown")
             .attr("align", "center")
             .append("select")
             .attr("id", "opts")
             .attr("class", "js-example-basic-single")
-            .style("width", "600px");
+            .style("width", "400px");
 
     // Start dropdown with ASIN "B001DGYKG0" selected
     select.selectAll("option")
@@ -24,9 +24,9 @@ d3.csv("../github_data/recalled_asins_with_product_titles.csv", function(error, 
 });
 
 // Set width/height/margins for vis
-var margin = {top: 100, right: 120, bottom: 50, left: 120};
-var w = 900 - margin.left - margin.right;
-var h = 480 - margin.top - margin.bottom;
+var margin = {top: 100, right: 20, bottom: 50, left: 20};
+var w = 600 - margin.left - margin.right;
+var h = 400 - margin.top - margin.bottom;
 var radius = 5;
 var padding = 1;
 
@@ -41,7 +41,7 @@ var xVar = "date",
     yVar = "rating";
 
 // Load data
-d3.csv("../github_data/recalled_amz_reviews.csv", function(error, data) {
+d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master/github_data/recalled_amz_reviews.csv", function(error, data) {
     // Read in the data
     if (error) return console.warn(error);
     data.forEach(function(d) {
@@ -142,7 +142,8 @@ d3.csv("../github_data/recalled_amz_reviews.csv", function(error, data) {
                     .style("left", (d3.event.pageX + 14)
                            + "px")
                     .style("top", (d3.event.pageY - 28)
-                           + "px");
+                           + "px")
+                    .style("font-size", "12px");
 
             })
             .on("mouseout", function(d) {
@@ -177,7 +178,7 @@ d3.csv("../github_data/recalled_amz_reviews.csv", function(error, data) {
                 tooltip.transition()
                     .duration(in_dur)
                     .style("opacity", .9);
-                tooltip.html(d.recalldate)
+                tooltip.html("Recalled: " + d.recalldate)
                     .style("left", (d3.event.pageX + 14)
                            + "px")
                     .style("top", (d3.event.pageY - 28)
