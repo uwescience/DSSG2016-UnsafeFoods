@@ -165,7 +165,7 @@ server <- shinyServer(function(input, output) {
        
        #merge the recall and non recall data sets
        merged_data <- rbind(ratings_data,ratings_data_recall)
-       merged_data$recalled <- c(rep("not recalled", 5),rep("recalled",5))
+       merged_data$recalled <- c(rep("all products", 5),rep("recalled",5))
        
        #plot the data
        ggplot(merged_data, aes(x=overall,y=prop_reviews,fill=as.factor(recalled))) +
