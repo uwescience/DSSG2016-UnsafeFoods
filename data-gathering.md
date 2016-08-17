@@ -62,13 +62,13 @@ the review. You can view different products using the dropdown menu below the
 plot.
 
 <!-- Load D3 -->
-<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="https://d3js.org/d3-time.v1.min.js"></script>
 <script src="https://d3js.org/d3-time-format.v2.min.js"></script>
 
 <!-- Load JQuery -->
 <script
-src="http://code.jquery.com/jquery-3.1.0.min.js"
+src="https://code.jquery.com/jquery-3.1.0.min.js"
 integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
 crossorigin="anonymous">
 </script>
