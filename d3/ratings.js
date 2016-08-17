@@ -1,10 +1,11 @@
 // Load ASINs and product titles into the select dropdown
-d3.csv("../data/processed/asins_with_product_titles.csv", function(error, data) {
+d3.csv("../github_data/recalled_asins_with_product_titles.csv", function(error, data) {
     var select = d3.select("#dropdown")
             .attr("align", "center")
             .append("select")
             .attr("id", "opts")
-            .attr("class", "js-example-basic-single");
+            .attr("class", "js-example-basic-single")
+            .style("width", "600px");
 
     // Start dropdown with ASIN "B001DGYKG0" selected
     select.selectAll("option")
@@ -12,7 +13,7 @@ d3.csv("../data/processed/asins_with_product_titles.csv", function(error, data) 
         .enter()
         .append("option")
         .attr("value", function (d) { return d.asin; })
-        .text(function (d) { return d.title; })
+        .text(function (d) { return d.title + " [ASIN: " + d.asin + "]"; })
         .property("selected", function(d){ return d.asin === "B001DGYKG0"; });
 
     // Initialize Select2
@@ -23,10 +24,10 @@ d3.csv("../data/processed/asins_with_product_titles.csv", function(error, data) 
 });
 
 // Set width/height/margins for vis
-var margin = {top: 50, right: 190, bottom: 50, left: 50};
-var w = 1000 - margin.left - margin.right;
+var margin = {top: 100, right: 120, bottom: 50, left: 120};
+var w = 900 - margin.left - margin.right;
 var h = 480 - margin.top - margin.bottom;
-var radius = 6;
+var radius = 5;
 var padding = 1;
 
 // x and y scales 
@@ -40,7 +41,7 @@ var xVar = "date",
     yVar = "rating";
 
 // Load data
-d3.csv("../data/processed/recalled_amz_reviews.csv", function(error, data) {
+d3.csv("../github_data/recalled_amz_reviews.csv", function(error, data) {
     // Read in the data
     if (error) return console.warn(error);
     data.forEach(function(d) {
@@ -171,7 +172,23 @@ d3.csv("../data/processed/recalled_amz_reviews.csv", function(error, data) {
             .attr("y2", y(5))
             .attr("stroke", "purple")
             .attr("stroke-linecap", "round")
-            .attr("stroke-width", "5");
+            .attr("stroke-width", "5")
+            .on("mouseover", function(d) {
+                tooltip.transition()
+                    .duration(in_dur)
+                    .style("opacity", .9);
+                tooltip.html(d.recalldate)
+                    .style("left", (d3.event.pageX + 14)
+                           + "px")
+                    .style("top", (d3.event.pageY - 28)
+                           + "px");
+
+            })
+            .on("mouseout", function(d) {
+                tooltip.transition()
+                    .duration(out_dur)
+                    .style("opacity", 0);
+            });
         
         // Move vertical line to recall date
         recallLine.transition()
@@ -185,6 +202,20 @@ d3.csv("../data/processed/recalled_amz_reviews.csv", function(error, data) {
             });
 
         recallLine.exit().remove();
+
+        var asin = svg.selectAll(".asinlabel")
+                .data([rowZero]);
+
+        asin.enter()
+            .append("text")
+            .attr("class", "asinlabel")
+            .attr("x", 1)
+            .attr("y", -50);
+        
+        asin.transition()
+            .text(function(d) { return "Amazon ID: " + d.asin; });
+
+        asin.exit().remove();
         
         // Begin arranging points
         force.start();
