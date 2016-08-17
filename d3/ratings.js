@@ -178,7 +178,7 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
                 tooltip.transition()
                     .duration(in_dur)
                     .style("opacity", .9);
-                tooltip.html(d.recalldate)
+                tooltip.html("Recalled: " + d.recalldate)
                     .style("left", (d3.event.pageX + 14)
                            + "px")
                     .style("top", (d3.event.pageY - 28)
