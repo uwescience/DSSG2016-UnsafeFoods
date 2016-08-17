@@ -6,13 +6,57 @@ layout: default
 <img src="{{ site.url }}{{ site.baseurl }}/assets/images/dssg.png">
 </a>
 
-In this study, we aim to investigate whether text mining of food product reviews
-can aid in the identification and ranking of food safety issues. Specifically,
-we focus on assessing whether text mining of the millions of consumer reviews
-posted online can be useful for early identification of unsafe food products
-that have the potential to cause foodborne disease outbreaks. The two aims of
-this project are: (1) mine and integrate a large corpus of data posted online to
-understand trends and features in unsafe food product reports, and (2) develop a
-machine-learning/informatics approach for early identification of unsafe food
-products. The data sources considered for this project include, recalls of food
-products from the FDA, and USDA and online product reviews.
+# Mining Online Data for Early Identification of Unsafe Food Products
+
+The goal of this project was to use online reviews from Amazon.com to identify
+potentially unsafe food products. Foods that are mislabeled, contaminated, or
+spoiled get recalled through a fairly time-consuming process. Our goal was to
+use reviews that consumers post online to predict whether a product would be
+recalled.
+
+## Explore the Reviews
+
+We created an exploratory tool for viewing reviews of recalled products. The
+plot below shows reviews and ratings for a recalled product over time, as well
+as the date the product was recalled (if no date appears, the recall happened
+outside the date range of our Amazon review data). Hover over the points to view
+the text of the review. In this case, a reviewer noted a labeling issue in 2011,
+long before the product was recalled for mislabeling. The reviews in this tool
+provide some support for the idea that product reviews can be a fruitful data
+source for identifying unsafe foods.
+
+
+<!-- Load D3 -->
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/d3-time.v1.min.js"></script>
+<script src="https://d3js.org/d3-time-format.v2.min.js"></script>
+
+<!-- Load JQuery -->
+<script
+src="https://code.jquery.com/jquery-3.1.0.min.js"
+integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+crossorigin="anonymous">
+</script>
+
+<!-- Use Select2 for dropdown menu -->
+<link
+href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css"
+rel="stylesheet" />
+<script
+src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js">
+</script>
+
+<!-- CSS for plot -->
+<link href="https://rawgit.com/uwescience/DSSG2016-UnsafeFoods/master/d3/style.css" type="text/css" rel="stylesheet" />
+
+<div id="vis"></div>
+
+<!-- Dropdown -->
+<p class="dropdown-label">Select product:</p>
+<div id="dropdown"></div>
+
+<!-- Visualization code -->
+<script src="https://rawgit.com/uwescience/DSSG2016-UnsafeFoods/master/d3/ratings.js"></script>
+
+<div id="review-vis"></div>
+
