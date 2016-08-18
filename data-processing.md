@@ -7,7 +7,7 @@ title:  Data Processing
 
 This section assumes that you have 2 datasets available on your local machine (please change the file paths accordingly):
 
-1.  reviews_Grocery_and_Gourmet_Food.json.gz (http://jmcauley.ucsd.edu/data/amazon/)
+1.  [reviews_Grocery_and_Gourmet_Food.json.gz](http://jmcauley.ucsd.edu/data/amazon/)
 
 
 2.  asin_intersection_full.csv (available from our website)
@@ -58,9 +58,13 @@ full_df['initiation_date'] = \
 ```
 
 Since it is unclear the best way to define the recall/review relationship (should a review be within 1 year of a recall in order to provide accurate information? 6 months?), we define four versions of the recall/review relationship:
+
 1.  Review is within (+/-) 1 year of the recall date
+
 2.  Review is within (+/-) 6 months of the recall date
+
 3.  Review is at most 1 year before the recall date
+
 4.  Review is at most 6 months before the recall date
 
 
