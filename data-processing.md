@@ -1,6 +1,6 @@
 ---
 layout: page
-title:  Data Processing
+title:  Data processing
 ---
 
 ### Create Amazon Review/Recalled Product DataFrame
