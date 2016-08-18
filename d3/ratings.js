@@ -24,7 +24,7 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
 });
 
 // Set width/height/margins for vis
-var margin = {top: 100, right: 20, bottom: 50, left: 20};
+var margin = {top: 100, right: 20, bottom: 50, left: 40};
 var w = 600 - margin.left - margin.right;
 var h = 400 - margin.top - margin.bottom;
 var radius = 5;
