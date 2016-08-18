@@ -7,12 +7,12 @@ title:  Data Processing
 
 This section assumes that you have 2 datasets available on your local machine (please change the file paths accordingly):
 
-1.  [reviews_Grocery_and_Gourmet_Food.json.gz](http://jmcauley.ucsd.edu/data/amazon/)
+1.  reviews_Grocery_and_Gourmet_Food.json.gz [http://jmcauley.ucsd.edu/data/amazon/](http://jmcauley.ucsd.edu/data/amazon/)
 
 
 2.  asin_intersection_full.csv (available from our website)
 
-The code below creates a dataframe that appends FDA recall variables to the Amazon review data.
+The code below creates a dataframe that appends FDA recall variables to the Amazon review data.  These data are used for the preliminary classification models as well as topic modeling.
 
 
 ```python

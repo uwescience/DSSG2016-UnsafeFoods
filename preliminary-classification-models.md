@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Preliminary Classification Models
+title: Preliminary Classification
 ---
 
 ### Supervised Learning Evaluation
@@ -1196,7 +1196,7 @@ plt.show()
 ```
 
 
-![png](https://github.com/mikemunsell/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/PrecisionRecallCurve.png)
+![png](https://github.com/mikemunsell/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/PrecisionRecallCurve.png?raw=true)
 
 
 We see that precision is driven to zero with only a slight increase in information recall.  This means that in order to identify even 20% of recalled products across product-types, we must label almost all non-recalled products as being recalled (which is not what we want!)
@@ -1259,7 +1259,7 @@ plt.legend(bbox_to_anchor=(1, 1), loc=2)
 
 
 
-![png](https://github.com/mikemunsell/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/Classification.png)
+![png](https://github.com/mikemunsell/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/Classification.png?raw=true)
 
 
 
@@ -1324,7 +1324,7 @@ plt.show()
 ```
 
 
-![png](https://github.com/mikemunsell/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/ROC.png)
+![png](https://github.com/mikemunsell/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/ROC.png?raw=true)
 
 
 The ROC curve demonstrates that the model with generic terms is only approximatley 50% accurate when evaluating across products.
