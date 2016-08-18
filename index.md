@@ -18,7 +18,7 @@ recalled. Specifically, we:
 1. Mine and integrate a large corpus of data posted online to understand trends
    and features in unsafe food product reports
    
-2. Develop a preliminary classification model for early identification of unsafe
+2. Develop preliminary classification models for early identification of unsafe
    foods
    
 This is one of
