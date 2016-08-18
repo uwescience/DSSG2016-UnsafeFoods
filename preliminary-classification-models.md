@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Preliminary Classification
+title: Preliminary classification
 ---
 
 ### Supervised Learning Evaluation
