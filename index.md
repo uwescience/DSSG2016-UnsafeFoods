@@ -26,6 +26,16 @@ This is one of
 from the 2016 Data Science for Social Good summer fellowship at the University
 of Washington [eScience Institute](http://escience.washington.edu/).
 
+## The Team
+
+**Project Lead:**
+[Elaine Nsoesie](http://globalhealth.washington.edu/faculty/elaine-nsoesie),
+Institute for Health Metrics and Evaluation, Department of Global Health, UW
+
+**Data Scientists:** Valentina Staneva, Joe Hellerstein, Jes Ford
+
+**DSSG Fellows:** Michael Munsell, Miki Verma, Cynthia Vint, Kara Woo
+
 ## Explore the Reviews
 
 We created an exploratory tool for viewing reviews of recalled products. The
