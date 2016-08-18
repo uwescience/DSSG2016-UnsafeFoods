@@ -8,11 +8,23 @@ layout: default
 
 # Mining Online Data for Early Identification of Unsafe Food Products
 
-The goal of this project was to use online reviews from Amazon.com to identify
+The goal of this project is to use product reviews from Amazon.com to identify
 potentially unsafe food products. Foods that are mislabeled, contaminated, or
-spoiled get recalled through a fairly time-consuming process. Our goal was to
-use reviews that consumers post online to predict whether a product would be
-recalled.
+spoiled get recalled through a time-consuming process that can leave consumers
+at risk of allergic reactions, injury, and illness for months. Our goal is to
+use reviews that consumers post online to predict whether a product will be
+recalled. Specifically, we:
+
+1. Mine and integrate a large corpus of data posted online to understand trends
+   and features in unsafe food product reports
+   
+2. Develop a preliminary classification model for early identification of unsafe
+   foods
+   
+This is one of
+[four projects](http://escience.washington.edu/dssg/project-summaries-2016/)
+from the 2016 Data Science for Social Good summer fellowship at the University
+of Washington [eScience Institute](http://escience.washington.edu/).
 
 ## Explore the Reviews
 
