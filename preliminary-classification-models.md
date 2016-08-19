@@ -5,7 +5,7 @@ title: Preliminary classification
 
 ### Supervised Learning Evaluation
 
-It is assumed that all code in the Data Processing section of the website has been run prior to any of the supervised learning code below. 
+It is assumed that all code in the [Data Processing]({{ site.url }}{{ site.baseurl }}/data-processing/) section of the website has been run prior to any of the supervised learning code below. 
 
 The code below evaluates multiple linear models, specifically, a logistic regression (with L1 and L2 penalization), linear support vector machine, and a ridge classifier.  All text in the reviews are evaluated as model features, and each definition of recall (review +/- 6 months from recall date, review +/- 1 year from recall date, review 1 year before recall date, review 6 months before recall date) is evaluated as the dependent variable.  Model accuracy, precision, recall, and F1-score is evaluated for each model/dependent variable combination using a 50% test/train split.
 
