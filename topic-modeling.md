@@ -96,6 +96,7 @@ plot(fit_recall.basis(), feature_names)
 ![png](https://github.com/mikemunsell/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/NMF_1.png?raw=true)
 
 
+
 It appears that some recall specific-topics emerge from the recalled products (an example is shown above - code prints 50 topics total when it is actually run).  There are still many product-related topics, however.
 
 
@@ -140,6 +141,7 @@ fit = nmf()
 plot(fit.basis(), feature_names)
 ```
 
+![png](https://github.com/mikemunsell/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/NMF_2.png?raw=true)
 
 ## NMF without product category words
 
