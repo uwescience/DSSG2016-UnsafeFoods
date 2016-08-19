@@ -1,63 +1,19 @@
 ---
 layout: page
-title:  Data processing
+title:  Data Processing
 ---
 
-### Create Amazon Review/Recalled Product DataFrame
+## Using the Data
 
-This section assumes that you have 2 datasets available on your local machine (please change the file paths accordingly):
+The FDA and Amazon datasets that were used in this project were semi-structured and had no immediate way to join them. Moreover, it required several cleaning tasks before it could be utilized in any way in a machine learning model. 
 
-1.  reviews_Grocery_and_Gourmet_Food.json.gz [http://jmcauley.ucsd.edu/data/amazon/](http://jmcauley.ucsd.edu/data/amazon/)
+The first task was matching the Universal Product Codes (UPCs) from the FDA data to the Amazon Standard Identification Numbers (ASINs) in the Amazon data. This was no simple feat, and it required a lot of creativity in scraping, checking, cleaning, and translating these codes. All of our work has been organized into processed UPCs and ASINs joined to recalls, reusable Python libraries with the flexibility to employ in other projects that are working with these product codes, and Jupyter Notebooks to walk users through our work. This can be found in our [Github repository](https://github.com/uwescience/DSSG2016-UnsafeFoods).
 
+As seen on our [Data Organizing page](data-organizing.md), this has all been cleaned and stored in a structured database. However, since the database is not publicly available, we have also provided information and code on how to work with the two datasets as they are in their original downloadable format in a [Jupyter Notebook](blob/master/notebooks/NMF_exploration.ipynb). 
 
-2.  asin_intersection_full.csv (available from our website)
+## Tagging the Reviews
 
-The code below creates a dataframe that appends FDA recall variables to the Amazon review data.  These data are used for the preliminary classification models as well as topic modeling.
-
-
-```python
-##Amazon Review Data - code borrowed from http://jmcauley.ucsd.edu/data/amazon/
-import pandas as pd
-import gzip
-import os
-wd = os.getcwd()
-
-def parse(path):
-  g = gzip.open(path, 'rb')
-  for l in g:
-    yield eval(l)
-
-def getDF(path):
-  i = 0
-  df = {}
-  for d in parse(path):
-    df[i] = d
-    i += 1
-  return pd.DataFrame.from_dict(df, orient='index')
-
-food_review = getDF(os.path.join(wd,"..","..",\
-                    "data/raw/reviews_Grocery_and_Gourmet_Food.json.gz"))
-```
-
-
-```python
-##Recall Data includes ASIN ID and Recall Date
-recall_data = pd.read_csv(os.path.join(wd,"..","..",
-                        "data/processed/asin_intersection_full.csv"), encoding='ISO-8859-1')
-full_df = pd.merge(food_review, recall_data, 
-                   how = "left", on = ["asin"])
-```
-
-
-```python
-##Match Formatting for Amazon Review Dates and Recall Date
-full_df['unixReviewTime'] = \
-    pd.to_datetime(full_df['unixReviewTime'], unit='s').dt.date
-full_df['initiation_date'] = \
-    pd.to_datetime(full_df['initiation_date'], unit='s').dt.date
-```
-
-Since it is unclear the best way to define the recall/review relationship (should a review be within 1 year of a recall in order to provide accurate information? 6 months?), we define four versions of the recall/review relationship:
+In order to develop a classification model, the objects that we are attempting to classify must be assigned tags. In our case, the tags would reference where or not the product review was published within the chronological vicinity of the time that an FDA recall corresponding to the product was released. This is not a very straightforward task, because the time frame between a product needing to be recalled and a product actually being recalled varies greatly. Since it is unclear the best way to define the recall/review relationship (should a review be within 1 year of a recall in order to provide accurate information? 6 months?), we defined four versions of the recall/review relationship:
 
 1.  Review is within (+/-) 1 year of the recall date
 
@@ -67,201 +23,18 @@ Since it is unclear the best way to define the recall/review relationship (shoul
 
 4.  Review is at most 6 months before the recall date
 
+In this way, we developed supervised models based on the four different tagging methods and compared.
 
-```python
-##Add Date bounderies
-## +/- 1 year from recall date
-full_df['initiation_date_plus1Y'] = \
-    pd.to_datetime(full_df['initiation_date'] + pd.DateOffset(years=1)).dt.date
-full_df['initiation_date_minus1Y'] = \
-    pd.to_datetime(full_df['initiation_date'] - pd.DateOffset(years=1)).dt.date
-    
-## +/- 6 months from recall date
-full_df['initiation_date_plus6M'] = \
-    pd.to_datetime(full_df['initiation_date'] + pd.DateOffset(months=6)).dt.date
-full_df['initiation_date_minus6M'] = \
-    pd.to_datetime(full_df['initiation_date'] - pd.DateOffset(months=6)).dt.date
-```
+## Cleaning the Text Data (Text Preprocessing)
 
+Before we can perform any kind of analysis on the text, it requires reformatting in order to optimize our model. In cleaning the text, our goal was to modify the text enough to capture interesting features, while also ensuring that important but infrequent terms were not removed. The following steps were most common in our text preprocessing methods:
 
-```python
-##Define recall in 4 ways:
-full_df['recalled_1y'] = (((full_df['unixReviewTime'] < \
-                            full_df['initiation_date_plus1Y']) == True)\
-                             & ((full_df['unixReviewTime'] > \
-                            full_df['initiation_date_minus1Y']) == True)).astype('int')
+1. Remove numbers and special characters.
+2. Tokenize the text (split it into individual words).
+3. Split unqualified compound words where found (CamelCase).
+4. Make all lowercase.
+5. Stem the tokens (cut them down to their root to maximize the intersection of related terms).
+6. Create a document term matrix (DTM) from the term frequencies.
+7. Perform TF-IDF weighting on the DTM. Since these texts are short, we also attempted developing models without TF-IDF weighting, as this method is ideal for texts longer than those found in corpora composed of texts like social media data.
 
-full_df['recalled_6m'] = (((full_df['unixReviewTime'] < \
-                            full_df['initiation_date_plus6M']) == True)\
-                             & ((full_df['unixReviewTime'] > \
-                            full_df['initiation_date_minus6M']) == True)).astype('int')
-
-full_df['recalled_1yb4'] = (((full_df['unixReviewTime'] < \
-                              full_df['initiation_date']) == True)\
-                             & ((full_df['unixReviewTime'] > \
-                            full_df['initiation_date_minus1Y']) == True)).astype('int')
-
-full_df['recalled_6mb4'] = (((full_df['unixReviewTime'] < \
-                              full_df['initiation_date']) == True)\
-                             & ((full_df['unixReviewTime'] > \
-                            full_df['initiation_date_minus6M']) == True)).astype('int')
-```
-
-
-```python
-##Check number of recalled reviews for each definition of 'Recall'
-print("Review +/- 1 Year from recall: %d" \
-      % full_df['recalled_1y'].sum())
-print("Review 1 year before recall: %d" \
-      %full_df['recalled_1yb4'].sum())
-print("Review +/- 6 Months from recall: %d" \
-      %full_df['recalled_6m'].sum())
-print("Review 6 months before recall: %d" \
-      %full_df['recalled_6mb4'].sum())
-```
-
-    Review +/- 1 Year from recall: 1285
-    Review 1 year before recall: 790
-    Review +/- 6 Months from recall: 547
-    Review 6 months before recall: 335
-
-
-### Subset Data
-
-Given that our text is very imbalanced (1.2 million non-recalled product reviews vs. a few thousand recalled reviews), the code below creates an artifically blanaced sample (0.5% random sample of the nonrecalled products and 100% recalled products)
-
-
-```python
-full_df_recalled = full_df[full_df.recalled_1y == 1]
-full_df_nonrecalled = full_df[full_df.recalled_1y == 0]
-
-from sklearn.cross_validation import train_test_split
-X_testRecall, X_trainRecall, Y_testRecall, Y_trainRecall = \
-                                            train_test_split(full_df_recalled['reviewText'], \
-                                            full_df_recalled['recalled_1y'], \
-                                            test_size=0.999, random_state=123)
-
-X_testNoRecall, X_trainNoRecall, Y_testNoRecall, Y_trainNoRecall = \
-                                            train_test_split(full_df_nonrecalled['reviewText'], \
-                                            full_df_nonrecalled['recalled_1y'], \
-                                            test_size=0.005, random_state=123)
-
-
-
-##Combined to have subsets with 1/2 of the recall data each
-Xtrain = pd.concat([X_trainRecall, X_trainNoRecall], axis=0)
-Xtrain = pd.DataFrame(Xtrain, columns=['reviewText'], dtype=str)
-Ytrain = pd.concat([Y_trainRecall, Y_trainNoRecall], axis=0)
-```
-
-
-```python
-##Add all other "Recall" Definitions to the Ytrain dataset and create a final subset
-Ytrain = pd.merge(pd.DataFrame(Ytrain), pd.DataFrame(full_df.recalled_1yb4), \
-                  left_index=True, right_index=True)
-Ytrain = pd.merge(Ytrain, pd.DataFrame(full_df.recalled_6m), \
-                  left_index=True, right_index=True)
-Ytrain = pd.merge(Ytrain, pd.DataFrame(full_df.recalled_6mb4), \
-                  left_index=True, right_index=True)
-Ytrain = pd.merge(Ytrain, pd.DataFrame(full_df.asin), \
-                  left_index=True, right_index=True)
-Subset = pd.merge(Xtrain, Ytrain, left_index=True, right_index=True)
-```
-
-### Clean Text Data
-
-The code below cleans the text in the following way: removes special characters and english 'stopwords', accounts for missing returns, makes text lowercase, and stems words to their root. 
-
-
-```python
-##Tokenize review text for each review
-import numpy as np
-from nltk import word_tokenize
-from nltk.stem.lancaster import LancasterStemmer
-st = LancasterStemmer()
-
-Subset['reviewText'] = Subset['reviewText'].str.replace("'", "")
-Subset['reviewText'] = Subset['reviewText'].str.replace('[^a-zA-Z\s]',' ')
-tokens_I = [word_tokenize(review) for review in Subset['reviewText']]
-```
-
-
-```python
-##Separate strings with multiple uppercase characters (e.g., gCholesterol, VeronaStarbucks). This should take care of situations where the reviews included returns that were not treated as spaces in the raw text file
-import re
-def split_uppercase(tokens):
-    tokens_II = np.empty((len(tokens),0)).tolist()
-    for review in tokens:
-        n = tokens.index(review)
-        for word in review:
-            split = re.sub(r'([A-Z][a-z])', r' \1', word)
-            tokens_II[n].append(split)
-    return tokens_II
-
-tokens_II = split_uppercase(tokens_I)
-```
-
-
-```python
-##Make all text lower case
-def make_lowercase(tokens):
-    tokens_final = np.empty((len(tokens),0)).tolist()
-    for review in tokens:
-        n = tokens.index(review)
-        for word in review:
-            lowercase_word = word.lower()
-            tokens_final[n].append(lowercase_word)
-    return tokens_final
-
-tokens = make_lowercase(tokens_II)
-```
-
-
-```python
-##Remove stopwords and stem
-from nltk.corpus import stopwords
-stopwords = stopwords.words('english')
-
-def stem_tokens(tokens):
-    stemmed_token = np.empty((len(tokens),0)).tolist()
-    for review in tokens:
-        n = tokens.index(review)
-        for word in review:
-            if word not in stopwords:
-                stem = st.stem(word)
-                stemmed_token[n].append(stem)
-    return stemmed_token
-        
-stemmed = stem_tokens(tokens)
-```
-
-
-```python
-##Manipulate stemmed text to be string instead of list (needed for count vectorizer)
-def make_string(text):
-    final_review_text = []
-    for review in text:
-        for word in review:
-            n = review.index(word)
-            if n == 0:
-                string = review[n]
-            else:
-                string = string + " " + review[n]
-        final_review_text.append(string)
-    return final_review_text
-
-final_text = make_string(stemmed)
-```
-
-### Create Document Term Matrix
-
-We create a document term matrix that includes term frequencies.  TF-IDF weighting is not applied because all documents are relatively short and this would artificially inflate words that do not occur very often.
-
-
-```python
-##Count Vectorizer Matrix
-from sklearn.feature_extraction.text import CountVectorizer
-
-vectorizer = CountVectorizer(binary=False, ngram_range=(1, 1))
-text_matrix = vectorizer.fit_transform(final_text)
-```
+![In the Document Term Matrix, each row represents a review, and each column represents a term. Each cell is equal to the number of occurrences of the term in the corresponding review.](assets/images/dtm_viz.png)
