@@ -89,7 +89,7 @@ fullplot <- ggplot(yearly_tally, aes(x = year, y = n, color = recall)) +
   labs(x = "Year",
        y = "",
        color = "",
-       title = "Reviews per year")
+       title = "Yearly review counts for recalled and non-recalled products")
 
 ## Recalled products only
 recallplot <- ggplot(yearly_tally[yearly_tally$recall == "Recalled", ],
@@ -128,7 +128,8 @@ fullplot_mo <- ggplot(monthly_tally, aes(x = newdate, y = n, color = recall)) +
   scale_y_continuous(labels = comma) +
   labs(x = "Year",
        y = "",
-       color = "")
+       color = "",
+       title = "Monthly review counts for recalled and non-recalled products")
 
 ## Recalled only
 recallplot_mo <- ggplot(monthly_tally[monthly_tally$recall == "Recalled", ],
@@ -161,7 +162,8 @@ ggplot(amz_clean, aes(x = overall, fill = recall)) +
   facet_grid(recall ~ ., scales = "free_y") +
   scale_fill_viridis(discrete = TRUE, end = 0.7) +
   labs(y = "Count",
-       x = "Rating") +
+       x = "Rating",
+       title = "Rating distribution for recalled and non-recalled products") +
   theme(legend.position = "none")
 ```
 
