@@ -37,4 +37,4 @@ Before we can perform any kind of analysis on the text, it requires reformatting
 6. Create a document term matrix (DTM) from the term frequencies.
 7. Perform TF-IDF weighting on the DTM. Since these texts are short, we also attempted developing models without TF-IDF weighting, as this method is ideal for texts longer than those found in corpora composed of texts like social media data.
 
-![In the Document Term Matrix, each row represents a review, and each column represents a term. Each cell is equal to the number of occurrences of the term in the corresponding review.](assets/images/dtm_viz.png)
+![In the Document Term Matrix, each row represents a review, and each column represents a term. Each cell is equal to the number of occurrences of the term in the corresponding review.]({{ site.url }}/assets/images/dtm_viz.PNG)
