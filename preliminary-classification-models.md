@@ -3,153 +3,51 @@ layout: page
 title: Preliminary classification
 ---
 
+For the initial classification model, we implemented the review text as the model features- that is, the model accounted for common terms to determine whether a review should be tagged as linked to a recalled product or not. We began with 4 different models to test. We tried a logistic regression model, trying both L1 and L2 penalization. L1 and L2 regularization are different ways to handle irrelevant feature, or noise. L1 handles irrelevant features that increase logarithmically with the sample size, while L2 handles a linear increase. We also tried a Linear Support Vector Machine classification model and a Ridge Regression model. Since models with a lot of features, such as term frequencies, tend to be linearly separable, these two linear models were potentially good fits for our data. Both regularize the weights to avoid over-fitting.
+
 ### Supervised Learning Evaluation
 
-It is assumed that all code in the Data Processing section of the website has been run prior to any of the supervised learning code below. 
+Below are the results from our initial testing of the 4 models. All text in the reviews are evaluated as model features, and each definition of recall (review +/- 6 months from recall date, review +/- 1 year from recall date, review 1 year before recall date, review 6 months before recall date) is evaluated as the dependent variable. Model accuracy, precision, recall, and F1-score is evaluated for each model/dependent variable combination using a 50% test/train split.
 
-The code below evaluates multiple linear models, specifically, a logistic regression (with L1 and L2 penalization), linear support vector machine, and a ridge classifier.  All text in the reviews are evaluated as model features, and each definition of recall (review +/- 6 months from recall date, review +/- 1 year from recall date, review 1 year before recall date, review 6 months before recall date) is evaluated as the dependent variable.  Model accuracy, precision, recall, and F1-score is evaluated for each model/dependent variable combination using a 50% test/train split.
+#### Review +/- 1 Year from recall:
 
-
-```python
-from sklearn import svm
-from sklearn.linear_model import LogisticRegression, RidgeClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-
-C=1  ##Note if C is too small percision/recall is zero
-alpha = 1/C
-classifiers = {'L1 logistic': LogisticRegression(C=C, \
-                                    penalty='l1'),
-               'L2 logistic (OvR)': LogisticRegression(C=C, \
-                                    penalty='l2'),
-               'Linear SVC': svm.SVC(kernel='linear', C=C, \
-                            probability=True, random_state=0),
-               'Ridge': RidgeClassifier(alpha=alpha)}
-
-recall_defs = {'Review +/- 1 Year from recall': 'recalled_1y',
-               'Review 1 year before recall' : 'recalled_1yb4', 
-               'Review +/- 6 Months from recall' : 'recalled_6m', 
-               'Review 6 months before recall' : 'recalled_6mb4'}
+| Accuracy Measure | L1 Logistic   | L2 Logistic  | Linear SVC  |  Ridge  |
+| ---------------- |:-------------:|:------------:|:-----------:| -------:|
+| Accuracy         | 0.849         | 0.853        | 0.818       | 0.840   |
+| Precision        | 0.614         | 0.630        | 0.473       | 0.563   |
+| Recall           | 0.343         | 0.371        | 0.442       | 0.353   |
+| F1               | 0.440         | 0.467        | 0.457       | 0.434   |
 
 
-for index, (recall_descrip, recall_def) in enumerate(recall_defs.items()):
-    target = np.array(Subset[recall_def])
-    X_test, X_train, Y_test, Y_train = train_test_split(text_matrix, target, test_size=0.5, random_state=123)
-    print("%s:" % recall_descrip)
-    print("------------------------------------------------------")
-    for index, (name, classifier) in enumerate(classifiers.items()):
-        classifier.fit(X_train, Y_train)
-        Y_pred = classifier.predict(X_test)
-        print("%s:" % name)
-        print("\tAccuracy: %1.3f" % accuracy_score(Y_test, Y_pred))
-        print("\tPrecision: %1.3f" % precision_score(Y_test, Y_pred))
-        print("\tRecall: %1.3f" % recall_score(Y_test, Y_pred))
-        print("\tF1: %1.3f\n" % f1_score(Y_test, Y_pred))
-```
+    
+#### Review 6 months before recall:
 
-    Review +/- 1 Year from recall:
-    ------------------------------------------------------
-    L2 logistic (OvR):
-    	Accuracy: 0.853
-    	Precision: 0.630
-    	Recall: 0.371
-    	F1: 0.467
+| Accuracy Measure | L1 Logistic   | L2 Logistic  | Linear SVC  |  Ridge  |
+| ---------------- |:-------------:|:------------:|:-----------:| -------:|
+| Accuracy         | 0.947         | 0.948        | 0.923       | 0.942   |
+| Precision        | 0.174         | 0.233        | 0.120       | 0.102   |
+| Recall           | 0.045         | 0.056        | 0.107       | 0.034   |
+| F1               | 0.072         | 0.091        | 0.113       | 0.051   |
+
+
+#### Review +/- 6 Months from recall:
+
+| Accuracy Measure | L1 Logistic   | L2 Logistic  | Linear SVC  |  Ridge  |
+| ---------------- |:-------------:|:------------:|:-----------:| -------:|
+| Accuracy         | 0.920         | 0.920        | 0.896       | 0.919   |
+| Precision        | 0.384         | 0.378        | 0.258       | 0.364   |
+| Recall           | 0.133         | 0.129        | 0.220       | 0.126   |
+| F1               | 0.197         | 0.193        | 0.238       | 0.187   |
+
     
-    L1 logistic:
-    	Accuracy: 0.849
-    	Precision: 0.614
-    	Recall: 0.343
-    	F1: 0.440
-    
-    Linear SVC:
-    	Accuracy: 0.818
-    	Precision: 0.473
-    	Recall: 0.442
-    	F1: 0.457
-    
-    Ridge:
-    	Accuracy: 0.840
-    	Precision: 0.563
-    	Recall: 0.353
-    	F1: 0.434
-    
-    Review 6 months before recall:
-    ------------------------------------------------------
-    L2 logistic (OvR):
-    	Accuracy: 0.948
-    	Precision: 0.233
-    	Recall: 0.056
-    	F1: 0.091
-    
-    L1 logistic:
-    	Accuracy: 0.947
-    	Precision: 0.174
-    	Recall: 0.045
-    	F1: 0.072
-    
-    Linear SVC:
-    	Accuracy: 0.923
-    	Precision: 0.120
-    	Recall: 0.107
-    	F1: 0.113
-    
-    Ridge:
-    	Accuracy: 0.942
-    	Precision: 0.102
-    	Recall: 0.034
-    	F1: 0.051
-    
-    Review +/- 6 Months from recall:
-    ------------------------------------------------------
-    L2 logistic (OvR):
-    	Accuracy: 0.920
-    	Precision: 0.378
-    	Recall: 0.129
-    	F1: 0.193
-    
-    L1 logistic:
-    	Accuracy: 0.920
-    	Precision: 0.384
-    	Recall: 0.133
-    	F1: 0.197
-    
-    Linear SVC:
-    	Accuracy: 0.896
-    	Precision: 0.258
-    	Recall: 0.220
-    	F1: 0.238
-    
-    Ridge:
-    	Accuracy: 0.919
-    	Precision: 0.364
-    	Recall: 0.126
-    	F1: 0.187
-    
-    Review 1 year before recall:
-    ------------------------------------------------------
-    L2 logistic (OvR):
-    	Accuracy: 0.888
-    	Precision: 0.451
-    	Recall: 0.210
-    	F1: 0.287
-    
-    L1 logistic:
-    	Accuracy: 0.887
-    	Precision: 0.438
-    	Recall: 0.203
-    	F1: 0.277
-    
-    Linear SVC:
-    	Accuracy: 0.860
-    	Precision: 0.334
-    	Recall: 0.319
-    	F1: 0.326
-    
-    Ridge:
-    	Accuracy: 0.881
-    	Precision: 0.380
-    	Recall: 0.184
-    	F1: 0.248
-    
+#### Review 1 year before recall:
+
+| Accuracy Measure | L1 Logistic   | L2 Logistic  | Linear SVC  |  Ridge  |
+| ---------------- |:-------------:|:------------:|:-----------:| -------:|
+| Accuracy         | 0.887         | 0.888        | 0.860       | 0.881   |
+| Precision        | 0.438         | 0.451        | 0.334       | 0.380   |
+| Recall           | 0.203         | 0.210        | 0.319       | 0.184   |
+| F1               | 0.277         | 0.287        | 0.326       | 0.248   |
 
 
 ### Key Words and Performance of Linear SVM
