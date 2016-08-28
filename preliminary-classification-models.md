@@ -49,71 +49,24 @@ Below are the results from our initial testing of the 4 models. All text in the 
 | Recall           | 0.203         | 0.210        | 0.319       | 0.184   |
 | F1               | 0.277         | 0.287        | 0.326       | 0.248   |
 
+We mostly care about the recall measure (the % of recalled product reviews identified), given that our data are imbalanced. Therefore, Linear SVM with the review being +/- 1 year from the recall performed the best. However, there is definitely still needed improvement to our model.
 
 ### Key Words and Performance of Linear SVM
 
-We mostly care about the recall measure (the % of recalled product reviews identified), given that our data are imbalanced. Therefore, Linear SVM with the review being +/- 1 year from the recall performed the best.  The code below explores the keywords that are coming out of the model and its overall performance.
+The next task was to investigate key words (features) in the model that held the most weight. In this exercise, we performed 20-fold cross-validation to give more credibility to our model, while also extracting the top 10 most predictive words. We also separated our training and test set to not include reviews for the same product in both data subsets. This way, we could account for product-specific noise. 
 
-The first step is to use cross validation with 20 folds.  Each fold contains different product IDs, which will tell us if the model is generalizable across products.  For each CV, we look at the top 10 most predictive words.
+![Summary Statistics for SVC Cross-Validation]({{ site.url }}{{ site.baseurl }}/assets/images/svc_cross_val_graph.png)
 
-
-```python
-##Cross validation with test/train samples that have different products to see if model is product specific
-from sklearn.cross_validation import LabelKFold
-
-model = svm.SVC(kernel='linear', C=C, probability=True, random_state=0)
-target = np.array(Subset.recalled_1y)
-
-term_names = vectorizer.get_feature_names()
-term_names = pd.DataFrame(term_names, columns=['Term'])
-
-labels = np.array(Subset.asin)
-lkf_1 = LabelKFold(labels, n_folds=20)
-recalled_asins = Subset[(Subset.recalled_1y == 1)].asin.unique()
+| Measure	| Min.		| 1st Qu.	| Median	| Mean	| 3rd Qu.	| Max.	|
+| --------- |:---------:|:---------:|:-----:|:---------:|:---------:| -----:|
+| Accuracy	| 0.754		| 0.799		| 0.807	| 0.8028	| 0.8145	| 0.825 |
+| Precision	| 0.126		| 0.1762	|0.228	| 0.2275	| 0.2638	| 0.375 |
+| Recall	| 0.008		| 0.0405	|0.0625	| 0.07615	| 0.1		| 0.165 |
+| F1		| 0.015		| 0.06575	|0.0995	| 0.1055	| 0.1418	| 0.198 |
 
 
-for index, (test, train) in enumerate(lkf_1):
-    results = model.fit(text_matrix[train], target[train])
-    Y_pred = model.predict(text_matrix[test])
-    
-    results_coef_array = np.transpose(results.coef_).todense()
-    results_df_coef = pd.DataFrame(results_coef_array,columns=['Coef'])
-    results_df_coef = pd.concat([term_names, results_df_coef],axis = 1)
-    results_df_coef = results_df_coef.sort_values(by='Coef',ascending=False)
-    results_df_coef = results_df_coef[results_df_coef.Coef>0]
-    
-    print("CV #%d Train Set Stats" % (index+1))
-    print("  Size of Train Set: %d" % len(target[train]))
-    print("  Unique products in Train Set: %d" \
-          % len(np.unique(labels[train])))
-    print("  Unique recalled products in Train Set: %d" \
-          % len(pd.merge(pd.DataFrame(recalled_asins, columns=['asin']), \
-            pd.DataFrame(np.unique(labels[train]), columns=['asin']), \
-            how = 'inner', on = ['asin'])))
-    print("  Recalls in Train Set: %d" % target[train].sum())
 
-    print(' ')
-    print("CV #%d Test Set Stats" % (index+1))   
-    print("  Size of Test Set: %d" % len(target[test]))
-    print("  Unique products in Test Set: %d" \
-          % len(np.unique(labels[test])))
-    print("  Unique recalled products in Test Set: %d" \
-          % len(pd.merge(pd.DataFrame(recalled_asins, columns=['asin']), \
-            pd.DataFrame(np.unique(labels[test]), columns=['asin']), \
-            how = 'inner', on = ['asin'])))
-    print("  Predicted Recalls in Test Set: %d" % Y_pred.sum())
-    print("  Actual Recalls in Test Set: %d" % target[test].sum())
-    print(' ')
-    print("CV #%d Performance" % (index+1))
-    print("  Accuracy: %1.3f" % accuracy_score(target[test], Y_pred))
-    print("  Precision: %1.3f" % precision_score(target[test], Y_pred))
-    print("  Recall: %1.3f" % recall_score(target[test], Y_pred))
-    print("  F1: %1.3f\n" % f1_score(target[test], Y_pred))
-    print(' ')
-    print("Top 10 words predictive words")
-    print(results_df_coef.head(n=10))
-    print(' ')
-```
+
 
     CV #1 Train Set Stats
       Size of Train Set: 389
