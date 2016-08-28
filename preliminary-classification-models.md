@@ -509,7 +509,7 @@ The ROC curve demonstrates that the model with generic terms is only approximatl
 
 ### Non-linear Model
 
-The code below tests whether the same challenges above (low identification of recall, product-specific terms occur with a non-linear model)
+In our initial classification experiments, we also attempted to see the success of a non-linear model. In this case, we selected the [Random Forest Classifier](https://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm). 
 
 
 ```python
@@ -670,3 +670,9 @@ print("\tF1: %1.3f\n" % f1_score(Y_test, Y_pred))
 
 
 As we can see, non-linear models also have the challenge of identifying product-specific terms and having a low proportion of recalls identified.
+
+### Future Directions
+
+As seen above, it will remain difficult to develop a useful classification model. However, initial exploration of the text showed that there exist features that indicte necessity for recall. It is a matter of selecting the right features that add weight to the most important aspects of the text.
+
+We have already performed exploratory analysis of other aspects of the data in hopes of implementing into a (hopefully) better classification model. We have researched ways to implement the product categories as a feature in order to account for all of the product-specific noise. Also, we have researched the corresponding FDA data and developed useful [topics](https://uwescience.github.io/DSSG2016//2016/08/05/Unsafe-Foods-Week-8.html) from the Reason for Recall text data. We have yet to determine if these are worthwhile features to include. Stay Tuned!
