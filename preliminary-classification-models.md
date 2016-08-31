@@ -3,7 +3,7 @@ layout: page
 title: Preliminary classification
 ---
 
-For the initial classification model, we implemented the review text as the model features- that is, the model accounted for common terms to determine whether a review should be tagged as linked to a recalled product or not. We began with 4 different models to test. We tried a logistic regression model, trying both L1 and L2 penalization. L1 and L2 regularization are different ways to handle irrelevant feature, or noise. L1 handles irrelevant features that increase logarithmically with the sample size, while L2 handles a linear increase. We also tried a Linear Support Vector Machine classification model and a Ridge Regression model. Since models with a lot of features, such as term frequencies, tend to be linearly separable, these two linear models were potentially good fits for our data. Both regularize the weights to avoid over-fitting.
+For the initial classification model, we implemented the review text as the model features- that is, the model accounted for common terms to determine whether a review should be tagged as linked to a recalled product or not. We began with 4 different models to test. We tested both L1 and L2 logistic regression models. L1 and L2 regularization are different ways to handle irrelevant features, or noise. L1 works better usually when there are many, many features, because it handles an exponential griwth in irrelevant features, which is likely what our data would exhibit. We also tested a Linear Support Vector Machine classification model and a Ridge Regression model. Since models with a lot of features, such as term frequencies, tend to be linearly separable, these two linear models were potentially good fits for our data. Both regularize the weights to avoid over-fitting.
 
 ### Supervised Learning Evaluation
 
@@ -11,18 +11,18 @@ Below are the results from our initial testing of the 4 models. All text in the 
 
 #### Review +/- 1 Year from recall:
 
-| Accuracy Measure | L1 Logistic   | L2 Logistic  | Linear SVC  |  Ridge  |
-| ---------------- |:-------------:|:------------:|:-----------:| -------:|
-| Accuracy         | 0.849         | 0.853        | 0.818       | 0.840   |
-| Precision        | 0.614         | 0.630        | 0.473       | 0.563   |
-| Recall           | 0.343         | 0.371        | 0.442       | 0.353   |
-| F1               | 0.440         | 0.467        | 0.457       | 0.434   |
+| Accuracy Measure | Regression- L1 | Regression- L2 | Linear SVC  |  RidgeRegression  |
+| ---------------- |:--------------:|:--------------:|:-----------:| -----------------:|
+| Accuracy         | 0.849          | 0.853          | 0.818       | 0.840             |
+| Precision        | 0.614          | 0.630          | 0.473       | 0.563             |
+| Recall           | 0.343          | 0.371          | 0.442       | 0.353             |
+| F1               | 0.440          | 0.467          | 0.457       | 0.434             |
 
 
     
 #### Review 6 months before recall:
 
-| Accuracy Measure | L1 Logistic   | L2 Logistic  | Linear SVC  |  Ridge  |
+| Accuracy Measure | Regression- L1  | Regression- L2 | Linear SVC  |  Ridge Regression  |
 | ---------------- |:-------------:|:------------:|:-----------:| -------:|
 | Accuracy         | 0.947         | 0.948        | 0.923       | 0.942   |
 | Precision        | 0.174         | 0.233        | 0.120       | 0.102   |
@@ -32,7 +32,7 @@ Below are the results from our initial testing of the 4 models. All text in the 
 
 #### Review +/- 6 Months from recall:
 
-| Accuracy Measure | L1 Logistic   | L2 Logistic  | Linear SVC  |  Ridge  |
+| Accuracy Measure | Regression- L1  | Regression- L2 | Linear SVC  |  Ridge Regression  |
 | ---------------- |:-------------:|:------------:|:-----------:| -------:|
 | Accuracy         | 0.920         | 0.920        | 0.896       | 0.919   |
 | Precision        | 0.384         | 0.378        | 0.258       | 0.364   |
@@ -42,7 +42,7 @@ Below are the results from our initial testing of the 4 models. All text in the 
     
 #### Review 1 year before recall:
 
-| Accuracy Measure | L1 Logistic   | L2 Logistic  | Linear SVC  |  Ridge  |
+| Accuracy Measure | Regression- L1  | Regression- L2 | Linear SVC  |  Ridge Regression  |
 | ---------------- |:-------------:|:------------:|:-----------:| -------:|
 | Accuracy         | 0.887         | 0.888        | 0.860       | 0.881   |
 | Precision        | 0.438         | 0.451        | 0.334       | 0.380   |
@@ -502,7 +502,7 @@ plt.show()
 ```
 
 
-![png](https://github.com/mikemunsell/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/ROC.png?raw=true)
+![png](https://github.com/cvint13/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/ROC_alltext.png?raw=true)
 
 
 The ROC curve demonstrates that the model with generic terms is only approximatley 50% accurate when evaluating across products.
@@ -673,6 +673,8 @@ As we can see, non-linear models also have the challenge of identifying product-
 
 ### Future Directions
 
-As seen above, it will remain difficult to develop a useful classification model. However, initial exploration of the text showed that there exist features that indicte necessity for recall. It is a matter of selecting the right features that add weight to the most important aspects of the text.
+There is still wide margin for improvement, and we need custom designed algorithms to extract the right features. However, initial exploration of the text showed that there exist features that indicate necessity for recall. It is a matter of selecting the right features that add weight to the most important aspects of the text.
 
 We have already performed exploratory analysis of other aspects of the data in hopes of implementing into a (hopefully) better classification model. We have researched ways to implement the product categories as a feature in order to account for all of the product-specific noise. Also, we have researched the corresponding FDA data and developed useful [topics](https://uwescience.github.io/DSSG2016//2016/08/05/Unsafe-Foods-Week-8.html) from the Reason for Recall text data. We have yet to determine if these are worthwhile features to include. Stay Tuned!
+
+To see a full notebook with all of our code to date of the supervised model, click [here](https://github.com/uwescience/DSSG2016-UnsafeFoods/blob/master/notebooks/SupervisedLearningModels_final.ipynb).
