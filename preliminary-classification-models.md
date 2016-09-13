@@ -1,9 +1,9 @@
 ---
 layout: page
-title: Preliminary classification
+title: Preliminary Classification
 ---
 
-For the initial classification model, we implemented the review text as the model features- that is, the model accounted for common terms to determine whether a review should be tagged as linked to a recalled product or not. We began with 4 different models to test. We tested both L1 and L2 logistic regression models. L1 and L2 regularization are different ways to handle irrelevant features, or noise. L1 works better usually when there are many, many features, because it handles an exponential griwth in irrelevant features, which is likely what our data would exhibit. We also tested a Linear Support Vector Machine classification model and a Ridge Regression model. Since models with a lot of features, such as term frequencies, tend to be linearly separable, these two linear models were potentially good fits for our data. Both regularize the weights to avoid over-fitting.
+For the initial classification model, we implemented the review text as the model features- that is, the model accounted for common terms to determine whether a review should be tagged as linked to a recalled product or not. We began with 4 different models to test. We tested both L1 and L2 logistic regression models. L1 and L2 regularization are different ways to handle irrelevant features, or noise. L1 works better usually when there are many, many features, because it handles an exponential growth in irrelevant features, which is likely what our data would exhibit. We also tested a Linear Support Vector Machine classification model and a Ridge Regression model. Since models with a lot of features, such as term frequencies, tend to be linearly separable, these two linear models were potentially good fits for our data. Both regularize the weights to avoid over-fitting.
 
 ### Supervised Learning Evaluation
 
