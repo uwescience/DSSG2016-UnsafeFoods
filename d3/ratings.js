@@ -30,7 +30,7 @@ var h = 400 - margin.top - margin.bottom;
 var radius = 5;
 var padding = 1;
 
-// x and y scales 
+// x and y scales
 var x = d3.time.scale()
         .range([0, w]);
 
@@ -64,7 +64,7 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
             .ticks(5)
             .scale(y)
             .orient("left");
-    
+
     // Create SVG
     var svg = d3.select("#vis")
             .append("svg")
@@ -72,7 +72,7 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
             .attr("height", h + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    
+
     // Draw x axis and label
     svg.append("g")
         .classed("x axis", true)
@@ -157,15 +157,15 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
         node.exit().remove();
 
         // Add line showing recall date
-        
+
         // Use first row of filteredData to find the recall date -- this works
         // because we only have one recall (and hence one recall date) per
         // product, but if there were multiple it would have to be different
-        var rowZero = filteredData[0]; 
-             
+        var rowZero = filteredData[0];
+
         var recallLine = svg.selectAll(".line")
                 .data([rowZero]); // Data needs to be an array!!
-        
+
         recallLine.enter()
             .append("line")
             .attr("class", "line")
@@ -190,7 +190,7 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
                     .duration(out_dur)
                     .style("opacity", 0);
             });
-        
+
         // Move vertical line to recall date
         recallLine.transition()
             .duration(400)
@@ -212,12 +212,12 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
             .attr("class", "asinlabel")
             .attr("x", 1)
             .attr("y", -50);
-        
+
         asin.transition()
             .text(function(d) { return "Amazon ID: " + d.asin; });
 
         asin.exit().remove();
-        
+
         // Begin arranging points
         force.start();
 
@@ -280,7 +280,7 @@ d3.csv("https://raw.githubusercontent.com/uwescience/DSSG2016-UnsafeFoods/master
             var newData = $("#opts").val();
             updatePlot(newData);
         });
-    
+
 });
 
 // Products that might be good for demo:
