@@ -93,6 +93,7 @@ sub {
 }
 img {
   padding: 10px 10px 10px 10px;
+  border-color: #e0ffe4;
   border-style: solid;
   border-width: 5px;
 }

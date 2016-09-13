@@ -1,0 +1,9 @@
+name: shiny_app
+account: cynthiavint
+server: shinyapps.io
+appId: 119965
+bundleId: 531319
+url: https://cynthiavint.shinyapps.io/shiny_app/
+when: 1471132824.32901
+asMultiple: FALSE
+asStatic: FALSE
