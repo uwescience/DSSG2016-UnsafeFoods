@@ -31,9 +31,9 @@ def removeNonDigits(upc_list):
         upc_list[index] = re.sub("\D","", upc_list[index])
 
     
-def MakeUPCList(text, link = False, re_pattern = None):
+def makeUPCList(text, link = False, re_pattern = None):
     """
-    Finds groups of characters in text that match specified pattern 
+    Finds unique groups of characters in text that match specified pattern 
     and removes dashes and spaces from matched strings using removeSymbols function.  
     
     Parameters
@@ -93,21 +93,21 @@ def MakeUPCList(text, link = False, re_pattern = None):
         else:
             upc_list.append(match_group) 
         removeNonDigits(upc_list)
-    return upc_list   
+    return list(set(upc_list))
         
 def makeUPCCol(string_col, link = False, re_pattern = None, verbose = True):
     """
-    Creates a list of lists of strings that match specified pattern 
-    for each row in a list of strings using MakeUPCList function.
+    Creates a list of strings that match specified pattern 
+    for each row in a column of strings using MakeUPCList function.
     
     Parameters
     ----------
     string_col: list of str
-        List of strings to be searched (if link = False (default))
-        List of urls linking to pages that contain the text to be searched (if link = True)
+        Column of strings to be searched (if link = False (default))
+        Column of urls linking to pages that contain the text to be searched (if link = True)
     link: bool
-        If false (default) `string_col` parameter passed in is list of strings to be searched;
-        if true, `string_col` parameter passed in is a list of urls 
+        If false (default) `string_col` parameter passed in is column of strings to be searched;
+        if true, `string_col` parameter passed in is a column of urls 
             linking to pages with text to be searched    
     re_pattern: str 
         Regex pattern to search for
@@ -139,7 +139,7 @@ def makeUPCCol(string_col, link = False, re_pattern = None, verbose = True):
             if idx+1 == len(string_col):
                 print(idx+1, "rows processed : COMPLETE")
 
-        upc_list = MakeUPCList(string, link, re_pattern)
+        upc_list = makeUPCList(string, link, re_pattern)
         upc_col.append(upc_list)
     return upc_col
 
