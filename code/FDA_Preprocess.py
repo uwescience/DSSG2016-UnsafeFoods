@@ -6,36 +6,28 @@ import os
 import pandas as pd
 import itertools
 
-#Constants
 UPC_PATTERN_TEXT = '\D\d[-\s](\d{6}[\s-]?\d{6})|(\d{1,2}[-\s]?\d{1,2}[-\s]?\d{5}[\s-]?\d{5}[-\s]?\d)|(\d{13})|(\d{12})|(\d[\s-]\d{5}[-\s]?\d{5}[- \r\n\f]\d)|(\d[\s-]\d{5}[-\s]?\d{5})|(\d{6}[-\s]\d{5}[-\s]?\d)|(\d{6}[\s-]\d{5})|(\d{5}[- \r\n\f]?\d{5})'
 UPC_PATTERN_PAGE = '\D(\d{12})\D|\D(\d[\s-]\d{5}[-\s]?\d{5}[-\s]\d)\D|\D(\d{6}[-\s]\d{5}[-\s]?\d)\D|\D(\d{5}[\s-]?\d{5})\D|\D(\d{6}[\s-]\d{5})\D'
 
-##TODO: add remove non-digits
-def removeSymbols(upc_list): 
+def removeNonDigits(upc_list): 
 
     """
-    Removes dashes and spaces in place from each element in a list of strings.
+    Removes non-digits in place from each element in a list of strings
     
     Parameters
     ----------
     upc_list: list of str
-        List of UPC numbers as strings
+        List of UPCs as strings
     
-    Raises
-    ------
-    TODO
-       
     SAMPLE USAGE
     ------------
     >>> l = ['7-01248-00301-2', '7 01248-01096 6', '7 01248 00156 8']
-    >>> removeSymbols(l)
+    >>> removeNonDigits(l)
     >>> l
     ['701248003012', '701248010966', '701248001568']
     """
     
     for index in range(len(upc_list)):
-        upc_list[index] = upc_list[index].replace('-','')
-        upc_list[index] = upc_list[index].replace(' ','')
         upc_list[index] = re.sub("\D","", upc_list[index])
 
     
@@ -62,11 +54,7 @@ def MakeUPCList(text, link = False, re_pattern = None):
     upc_list: list of str
         List of strings from `text` that matched `re_pattern`. If no match is found,
         an empty list is returned.
-        
-    Raises
-    ------
-    TODO
-    
+
     Notes
     -----
     Default regex patterns those that are optimal for finding UPCs in texts of different formats
@@ -104,74 +92,107 @@ def MakeUPCList(text, link = False, re_pattern = None):
             upc_list.extend([match for match in match_group if match != ''])
         else:
             upc_list.append(match_group) 
-        removeSymbols(upc_list)
+        removeNonDigits(upc_list)
     return upc_list   
         
-def makeUPCCol(string_list, link = False, re_pattern = None, verbose = True):
+def makeUPCCol(string_col, link = False, re_pattern = None, verbose = True):
     """
-    Creates a list of lists of strings in that match specified pattern 
+    Creates a list of lists of strings that match specified pattern 
     for each row in a list of strings using MakeUPCList function.
     
     Parameters
     ----------
-    string_list: list of str ?(or pandas Series of strings)?
-        List of string to be searched (if link = False (default))
+    string_col: list of str
+        List of strings to be searched (if link = False (default))
         List of urls linking to pages that contain the text to be searched (if link = True)
     link: bool
-        If false (default) `string_list` parameter passed in is list of strings to be searched;
-        if true, `string_list` parameter passed in is a list of urls 
+        If false (default) `string_col` parameter passed in is list of strings to be searched;
+        if true, `string_col` parameter passed in is a list of urls 
             linking to pages with text to be searched    
     re_pattern: str 
         Regex pattern to search for
         UPC_PATTERN_TEXT is default if link = False (default)
         UPC_PATTERN_PAGE is default if link = True
-        
+    verbose: bool
+        If true (default), print "n rows processed" for each 500th row, and print total number
+        of rows processed when complete
+
     Returns
     -------
-    upc_col: list of lists of str
-        List of lists of strings from each row of `str_list` that matched `re_pattern`.
+    upc_col: list of list of str
+        List of lists of strings from each row of `string_col` that matched `re_pattern`.
         `upc_col` is the same length as `string_col`. 
-        
-    Raises
-    ------
-    TODO
-    
-    Notes ?Repeat?   
-       
+
     SAMPLE USAGE
     ------------    
     >>> makeUPCCol(['Lot # 07.31.2015  UPC#  7 08953 60203 5',
         'Lot # 07.31.2015  UPC#  7 08953 60101 4',
         'Lot # 07.31.2015  UPC#  7 08953 60102 1'])
-    [['708953602035'], ['708953601014']]
-
-    TODO:
-    show passing series?
+    [['708953602035'], ['708953601014'], ['708953601021']]
 
     """ 
     upc_col = list()
-    for idx, val in enumerate(string_list):
+    for idx, string in enumerate(string_col):
         if verbose:
             if idx % 500 == 0:
                 print(idx, "rows processed")
-            if idx+1 == len(string_list):
+            if idx+1 == len(string_col):
                 print(idx+1, "rows processed : COMPLETE")
-        upc_list = MakeUPCList(val, link, re_pattern)
+
+        upc_list = MakeUPCList(string, link, re_pattern)
         upc_col.append(upc_list)
-    return pd.Series(upc_col, string_list.index)
+    return upc_col
 
-def makeEventUPCCol(df, upc_colname, event_colname, upc_length = 12):
-    event_upc_lists = [[upc for upc in df[df[event_colname] == event][upc_colname]] for event in df[event_colname]]
+def makeEventUPCCol(upc_col, event_col, upc_length = 12):
+    """
+    Creates list of all FDA event UPCs corresponding to each FDA recall row
+
+
+    Parameters
+    ----------
+    upc_col: list of list of str
+        List of list of UPCs where inner lists are UPCs associated with a FDA Recall
+    event_col: list of str
+        List of FDA Recall Event IDs corresponding to each FDA recall 
+    upc_length: int
+        Length of UPC to be included in `event_col`
+        Default value is 12, the most useful for comparison and pattern matching (use with UPC_Process module)
+        If upc_length=None, UPCs of all lengths are included
+
+
+    Returns
+    -------
+    event_upc_col: list of list of str
+        List of list of UPCs where inner lists are all UPCs (of length upc_length) associated with a FDA Recall Event
+
+    Raises
+    ------
+    If the lists are not the same length, function will raise Value Error
+
+
+    Notes
+    -----
+    FDA Recalls contain 1 or more recalled product 
+    FDA Recall Events contain 1 or more related FDA Recalls 
+
+    SAMPLE USAGE
+    ------------
+    >>> makeEventUPCCol([['85556900305'], ['855569003135'], ['030223009146'], ['045009101167']],
+                            [70071, 70071, 70104, 70104])
+    [['855569003135'],['855569003135'], ['045009101167', '030223009146'], ['045009101167', '030223009146']]
+        
+
+    """
+    if len(upc_col) != len(event_col):
+            raise ValueError("lists must be same length")
+    
+    df = pd.DataFrame({"upc": upc_col , "event" : event_col}) 
+
+    event_upc_lists = [[upc for upc in df[df["event"] == event]["upc"]] for event in df["event"]]
     if upc_length is None:
-        event_upcs = [[u for u in set(itertools.chain.from_iterable(u_list))] for u_list in event_upc_lists]
+        event_upc_col = [[u for u in set(itertools.chain.from_iterable(u_list))] for u_list in event_upc_lists]
     else:
-        event_upcs = [[u for u in set(itertools.chain.from_iterable(u_list)) if len(u) == upc_length] for u_list in event_upc_lists]
-    return pd.Series(event_upcs)
-
-
-
-
+        event_upc_col = [[u for u in set(itertools.chain.from_iterable(u_list)) if len(u) == upc_length] for u_list in event_upc_lists]
     
-
-    
+    return event_upc_col
     
