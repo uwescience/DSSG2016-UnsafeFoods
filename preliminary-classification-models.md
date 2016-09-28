@@ -502,10 +502,14 @@ plt.show()
 ```
 
 
+![png](https://github.com/cvint13/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/ROC.png?raw=true)
+
+
+The ROC curve demonstrates that the model with generic terms is only approximately 50% accurate when evaluating across products. This is partially due to the problem that the reviews are very short and none of the words we have selected are contained in the text. This urged us to test the classification with all words as features which increased the average performance to 65%, as it can be seen in the plot below.
+
 ![png](https://github.com/cvint13/DSSG2016-UnsafeFoods/blob/gh-pages/assets/images/ROC_alltext.png?raw=true)
 
 
-The ROC curve demonstrates that the model with generic terms is only approximatley 50% accurate when evaluating across products.
 
 ### Non-linear Model
 
