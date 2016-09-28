@@ -1,3 +1,9 @@
+
+import requests
+import re
+from time import sleep
+import pickle
+
 def checkDigit(upc_11):
     """
     Calculates the 12th 'check digit' from the 11 digit UPC 
@@ -311,4 +317,140 @@ def makeUPCProcessedList(upc_list, event_upc12_list = None):
             upc_processed_nested.append(["UPClength=%d" %(len(upc))])
     return upc_processed_nested
 
+def getASIN(upc_list):
+    """
+    TODO: Update
+    Queries UPCtoASIN.com to determine ASIN from UPC. If the UPC is 12 digits,
+    query the website and retrieve ASIN, then wait one second (per API rate limit)
 
+    Parameters
+    ----------
+    upc_list: list of str or str
+        List of 12-digit UPC string(s)
+    
+    Returns
+    -------
+    asin_list: list of str
+        List string(s) containing either a valid Amazon ID (ASIN) or "UPCNOTFOUND"
+
+    Raise
+    -----
+    TODO
+    If any of the UPCs are not 12 digits, the function will throw a ValueError.
+
+    Notes
+    -----
+    Github for UPCtoASIN.com API: https://github.com/AlexCline/upctoasin.com
+
+    SAMPLE USAGE
+    ------------
+    >>> getASIN('876063002233')
+    ['B001BCH7KM']
+    >>> getASIN('030243507898')
+    ['UPCNOTFOUND']
+    >>> getASIN(['876063002233', '030243507898'])
+    ['B001BCH7KM', 'UPCNOTFOUND']
+    >>> getASIN(['876063002233', '03024350789'])
+    ValueError: 03024350789: UPC must be 12 digits long
+
+    """
+    if isinstance(upc_list, str):
+        upc_list = [upc_list]
+    asin_list = list()
+    for upc in upc_list:
+        if len(upc) != 12:
+            raise ValueError(upc+ ": UPC must be 12 digits long")
+        url = "http://upctoasin.com/" + upc
+        response = requests.get(url)
+        asin_list.append(response.text)
+    return asin_list
+
+
+def makeUPCProcessedASINCol(df, upc_colname, pickle_filename = 'data_pickle', event_upc12_colname = None, rowrange = None, verbose = True):
+    """
+    Constructs a list of processed UPCs and their associated ASINs (if it exists) corresponding to each UPC in 
+    the UPC column of the DataFrame, periodically saving these lists to a Python Pickle file. 
+
+    Parameters
+    ----------
+    df: Pandas DataFrame
+        DataFrame containing FDA Recall Data
+    upc_colname: str
+        Name of DataFrame column containing unprocessed UPCs
+    pickle_filename: str
+        Filename indicating location where Pickle file should be saved
+    event_upc12_colname: str
+        Name of DataFrame column containing lists of UPCs corresponding to all recalls that
+            within the same FDA Recall Event
+        If None (default), construct list of 12 digit UPCs within FDA Recall (each row in DataFrame)
+    rowrange: tuple
+        Tuple indicating range of rows of the DataFrame to process
+        If None (defualt), process entire DataFrame
+    verbose: bool
+        If true (default), print "n rows processed & saved" for each 200th row, and print total number
+        of rows saved to `data_pickle` file when complete
+
+    Notes
+    -----
+    Function periodically saves to Pickle files because this processing takes a significant period of time
+    due to the repeated called to the `getASIN` function which queries an API withh a rate limit. 
+    "Pickling" also solves the type issues involved with reading and writing Python Lists, as these files
+    are converted into a byte stream, rather than as an object.
+    https://docs.python.org/3/library/pickle.html
+
+
+    SAMPLE USAGE
+    ------------
+
+
+
+    """
+
+    upc_col = list()
+    asin_col = list()
+    if rowrange is None:
+        rowrange = (0,df.shape[0])
+    for idx in range(rowrange[0], rowrange[1]):
+        if event_upc12_colname is None:
+            event_upc12_list = [upc for upc in df[upc_colname][idx] if len(upc) == 12]
+            upc_processed = makeUPCProcessedList(df[upc_colname][idx], event_upc12_list)
+        elif event_upc12_colname in df.columns:
+            upc_processed = makeUPCProcessedList(df[upc_colname][idx], df[event_upc12_colname][idx])
+        else: 
+            upc_processed = makeUPCProcessedList(df[upc_colname][idx])
+
+        upc_col.append(upc_processed)
+        asin_nested = [getASIN(upc_12) for upc_12 in upc_processed]
+        asin_col.append(asin_nested)
+
+        if (idx+1) % 200 == 0 or idx+1 == rowrange[1]:
+            processed_columns = [upc_col, asin_col]
+            with open(pickle_filename, 'wb') as f:
+                pickle.dump(processed_columns, f, pickle.HIGHEST_PROTOCOL)
+            if verbose:
+                print(idx+1, "rows processed & saved")
+
+def makeRecallReviewTuples(recall_upc_series, recall_asin_series, review_asin_list, recall_number_series = None, verbose = True):
+    tuples = list()
+    if not isinstance(recall_upc_series,pd.Series) or not isinstance(recall_asin_series, pd.Series):
+        raise TypeError("Parameter is not of type Series")
+    else:
+        if len(recall_upc_series) != len(recall_asin_series):
+            raise ValueError("Series must be same length")
+       
+    for idx, asin_entry in enumerate(recall_asin_series):
+        if verbose:
+            if idx % 100 == 0:
+                print(idx, "row processed")
+        upc_entry = recall_upc_series[idx]
+        for n, asin_list in enumerate(asin_entry):
+            for m, asin in enumerate(asin_list):
+                if len(asin) == 10:
+                    if asin in review_asin_list:
+                        upc = upc_entry[n][m]
+                        if recall_number_series is None:
+                            recall_number = idx
+                        else:
+                            recall_number = recall_number_series[n][m]
+                        tuples.append((upc, asin, recall_number))
+    return tuples
